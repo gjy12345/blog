@@ -12,7 +12,7 @@
 
     <servlet>
         <servlet-name>main</servlet-name>
-        <servlet-class>cn.gjy.framerwork.controller.MainServlet</servlet-class>
+        <servlet-class>cn.gjy.blog.framework.controller.MainServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
