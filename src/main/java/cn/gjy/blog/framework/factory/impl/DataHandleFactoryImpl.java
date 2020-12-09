@@ -40,7 +40,11 @@ public class DataHandleFactoryImpl implements DataHandleFactory {
         for (int i = 0; i < register.size(); i++) {
             if(handleMap.containsKey(register.get(i))){
                 log.e("已存在关于:"+register.get(i).getName()+" 的返回值处理器!");
-                throw new RuntimeException("已存在关于:"+register.get(i).getName()+" 的返回值处理器!");
+                if(dataHandle.getClass().getAnnotation(Config.class).level()>handleMap.get(register.get(i))
+                        .getClass().getAnnotation(Config.class).level()){
+                    log.e("已覆盖关于:"+register.get(i).getName()+" 的返回值处理器!");
+                }else
+                    continue;
             }
             handleMap.put(register.get(i),dataHandle);
             log.v("注册返回值:"+register.get(i).getName()+" 的返回值处理器.");

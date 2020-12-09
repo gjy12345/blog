@@ -7,7 +7,9 @@ package cn.gjy.blog.common;
  */
 public class ContentString {
 
-    public static final String USER_SESSION_ID="USER_SESSION_ID";
-    public static final String ADMIN_SESSION_ID="ADMIN_SESSION_ID";
+    public static final String USER_SESSION_TAG ="USER_SESSION_TAG";
+    public static final String ADMIN_SESSION_TAG ="ADMIN_SESSION_TAG";
+
+    public static final String V_CODE = "V_CODE_TAG";
 
 }

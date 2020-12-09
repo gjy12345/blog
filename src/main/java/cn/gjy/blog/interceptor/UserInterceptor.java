@@ -22,8 +22,13 @@ public class UserInterceptor implements Interceptor {
     }
 
     @Override
+    public String registerExcludePatten() {
+        return "/user/login";
+    }
+
+    @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Method method, Object methodObject) throws Exception {
-        if(request.getSession().getAttribute(ContentString.USER_SESSION_ID) != null)
+        if(request.getSession().getAttribute(ContentString.USER_SESSION_TAG) != null)
             return true;
         response.sendRedirect("redirect:"+request.getContextPath()+"/user/");
         return false;

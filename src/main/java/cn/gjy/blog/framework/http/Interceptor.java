@@ -14,6 +14,8 @@ public interface Interceptor {
     //正则表达式
     String registerPatten();
 
+    String registerExcludePatten();
+
     boolean preHandle(HttpServletRequest request, HttpServletResponse response, Method method, Object methodObject)
             throws Exception;
 

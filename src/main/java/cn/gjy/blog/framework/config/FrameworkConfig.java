@@ -29,4 +29,5 @@ public class FrameworkConfig {
     public static boolean xssFilter;
     public static String viewRoot;
     public static String viewEnd;
+    public static String contentPath;
 }

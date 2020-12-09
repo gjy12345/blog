@@ -76,6 +76,9 @@ public class ObjectFactory {
                 this.objectMap.put(this.controllerList.get(i).getClass(),this.controllerList.get(i));
             }
         }
+    }
+
+    public void initObjectParams() throws IllegalAccessException {
         Iterator<Class<?>> iterator = this.objectMap.keySet().iterator();
         Class<?> c,find;
         Field[] fields;

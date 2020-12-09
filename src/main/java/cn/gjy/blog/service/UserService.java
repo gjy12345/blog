@@ -1,5 +1,9 @@
 package cn.gjy.blog.service;
 
+import cn.gjy.blog.model.CheckResult;
+import cn.gjy.blog.model.MenuModel;
+import cn.gjy.blog.model.SysUser;
+
 /**
  * @Author gujianyang
  * @Date 2020/12/7
@@ -8,4 +12,7 @@ package cn.gjy.blog.service;
  */
 public interface UserService {
 
+    MenuModel getUserMenuData();
+
+    CheckResult<SysUser> loginUser(SysUser sysUser);
 }

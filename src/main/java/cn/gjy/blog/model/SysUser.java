@@ -24,6 +24,9 @@ public class SysUser {
     private Integer userType;
     private String face;
 
+    public static final int USER=1;
+    public static final int ADMIN=0;
+
     public String getFace() {
         return face;
     }

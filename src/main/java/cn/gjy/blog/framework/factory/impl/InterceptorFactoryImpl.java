@@ -6,6 +6,7 @@ import cn.gjy.blog.framework.http.Interceptor;
 import cn.gjy.blog.framework.log.SimpleLog;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * @author gujianyang
@@ -39,10 +40,16 @@ public class InterceptorFactoryImpl implements InterceptorFactory{
     @Override
     public List<Interceptor> getHandles(String url) {
         List<Interceptor> matches=new ArrayList<>();
-        pattens.parallelStream().filter(url::matches).forEach(s -> {
+        pattens.parallelStream().filter(s ->
+             url.matches(s) &&!url.matches(interceptorMap.get(s).registerExcludePatten())
+        ).forEach(s -> {
             matches.add(interceptorMap.get(s));
         });
         log.v(url+"===>匹配规则:"+matches.size());
         return matches;
+    }
+
+    public static void main(String[] args) {
+        System.out.println("/user/welcome".matches("/user/.+?"));
     }
 }

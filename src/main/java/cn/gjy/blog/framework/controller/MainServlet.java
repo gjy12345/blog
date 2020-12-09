@@ -135,10 +135,12 @@ public class MainServlet extends HttpServlet {
             this.dataHandleFactory.init(dataHandleObjects);
             log.v("init interceptor");
             this.interceptorFactory.init(interceptorObjects);
+            this.objectFactory.initObjectParams();
         } catch (Exception e) {
             e.printStackTrace();
             log.e("创建装配工厂失败:"+e.getMessage());
         }
+        FrameworkConfig.contentPath=getServletContext().getContextPath();
     }
 
 
