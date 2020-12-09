@@ -103,7 +103,7 @@ public class QueueDataSourceImpl extends BaseQueueDataSourceImpl {
                 while (connection==null){
                     if(this.isStop)
                         return null;
-                    connection=this.connectionsQueue.poll(1, TimeUnit.SECONDS);
+                    connection=this.connectionsQueue.poll(50, TimeUnit.NANOSECONDS);
                     try {
                         if(connection!=null&&!connection.isValid(testWait)){
                             connection=null;
