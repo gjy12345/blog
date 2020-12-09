@@ -69,8 +69,6 @@ public class ServiceInvocationHandlerImpl implements InvocationHandler {
             if(openTransactional&&!nowHasConnect){
                 log.v("事务提交.");
                 connection.commit();
-                ConnectionUtil.releaseConnect(connection);
-                ConnectionHolder.setConnection(null);
             }
         }catch (Exception e){
             if(openTransactional&&!nowHasConnect){
@@ -81,7 +79,8 @@ public class ServiceInvocationHandlerImpl implements InvocationHandler {
             throw e;
         }finally {
             if(!nowHasConnect){
-
+                ConnectionUtil.releaseConnect(connection);
+                ConnectionHolder.setConnection(null);
             }
         }
         return returnValue;
