@@ -25,7 +25,8 @@ To change this template use File | Settings | File Templates.
 
 	<body>
 		<div class="weadmin-body">
-			<blockquote class="layui-elem-quote">晚上好,亲爱的朋友.</blockquote>
+			<blockquote class="layui-elem-quote">
+				${nowTime},亲爱的${USER_SESSION_TAG.nickname}.</blockquote>
 			<div class="layui-fluid" style="overflow: hidden;">
 				<div class="layui-row layui-col-space15">
 					<div class="layui-col-md8">
@@ -94,22 +95,25 @@ To change this template use File | Settings | File Templates.
 								<article class="Box-row col-md-12 layui-card-body" style="margin-top: 10px">
 									<div class="d-flex gutter-condensed ">
 										<div class="col-lg-3 " style="max-width: 80px">
-											<img class="avatar avatar-user" style="height: auto" src="${pageContext.request.contextPath}/static/img/face.png" width="100%" height="100%" alt="avatar image">
+											<c:choose>
+												<c:when test="${USER_SESSION_TAG.face!=null}"><img class="avatar avatar-user" style="height: auto" src="${USER_SESSION_TAG.face}" width="100%" height="100%" alt="avatar image"></c:when>
+												<c:when test="${USER_SESSION_TAG.face==null}"><img class="avatar avatar-user" style="height: auto" src="${pageContext.request.contextPath}/static/img/face.png" width="100%" height="100%" alt="avatar image"></c:when>
+											</c:choose>
 										</div>
 										<div class="col-lg-9">
-											<div class="f4 text-bold lh-condensed mb-2 f">
+											<div class="f4 text-bold lh-condensed mb-2" style="min-height: 100px">
 												<div style="color: #0366d6;font-size: 16px">
-													Joe Block
+													${USER_SESSION_TAG.nickname}
 												</div>
 												<span class="d-block text-normal text-gray">
-													河洲花艳爚，庭树光彩蒨.白云天台山，可思不可见。
+													${USER_SESSION_TAG.sign}
 												</span>
 											</div>
 										</div>
 									</div>
 									<div class="col-md-12">
 										<div class="col-md-3">
-											等级:LV4
+											等级:LV${USER_SESSION_TAG.level}
 										</div>
 										<div class="col-md-3">
 											粉丝: <a href="">21</a>
@@ -210,45 +214,35 @@ To change this template use File | Settings | File Templates.
 						<!--更新日志-->
 						<blockquote class="layui-elem-quote font16">操作日志</blockquote>
 						<ul class="layui-timeline" style="max-height: 780px;overflow-y: auto;">
-							<li class="layui-timeline-item">
-								<i class="layui-icon layui-timeline-axis">&#xe609;</i>
-								<div class="layui-timeline-content layui-text">
-									<div class="layui-timeline-title">
-										<h3>发表博客:人类是怎么创建的</h3>
-										<span class="layui-badge-rim">2019-06-18</span>
+							<c:forEach items="${operations}" var="operation" varStatus="s">
+								<li class="layui-timeline-item">
+									<c:choose>
+										<c:when test="${operation.operationType==1}">
+											<i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+										</c:when>
+										<c:when test="${operation.operationType==2}">
+											<i class="layui-icon layui-timeline-axis">&#xe609;</i>
+										</c:when>
+										<c:when test="${operation.operationType==4}">
+											<i class="layui-icon layui-timeline-axis">&#xe702;</i>
+										</c:when>
+										<c:when test="${operation.operationType==3}">
+											<i class="layui-icon layui-timeline-axis">&#xe6b2;</i>
+										</c:when>
+									</c:choose>
+									<div class="layui-timeline-content layui-text">
+										<div class="layui-timeline-title">
+											<h3>${operation.operation}</h3>
+											<span class="layui-badge-rim">${operation.operationTime}</span>
+										</div>
+										<ul>
+											<li>ip: ${operation.ip}</li>
+											<li>客户端: ${operation.client}</li>
+										</ul>
 									</div>
-									<ul>
-										<li>ip: 192.168.0.1</li>
-										<li>客户端:web</li>
-									</ul>
-								</div>
-							</li>
-							<li class="layui-timeline-item">
-								<i class="layui-icon layui-timeline-axis">&#xe702;</i>
-								<div class="layui-timeline-content layui-text">
-									<div class="layui-timeline-title">
-										<h3>删除博客:小孩子</h3>
-										<span class="layui-badge-rim">2019-01-15</span>
-									</div>
-									<ul>
-										<li>ip: 192.168.0.1</li>
-										<li>客户端:web</li>
-									</ul>
-								</div>
-							</li>
-							<li class="layui-timeline-item">
-								<i class="layui-icon layui-timeline-axis">&#xe63f;</i>
-								<div class="layui-timeline-content layui-text">
-									<div class="layui-timeline-title">
-										<h3>创建博客</h3>
-										<span class="layui-badge-rim">2018-01-01</span>
-									</div>
-									<ul>
-										<li>ip: 192.168.0.1</li>
-										<li>客户端:web</li>
-									</ul>
-								</div>
-							</li>
+								</li>
+
+							</c:forEach>
 						</ul>
 					</fieldset>
 				</div>
