@@ -21,6 +21,7 @@ public class ErrorHandleImpl implements ErrorHandle {
 //        response.getWriter().write("fail");
         response.setStatus(500);
         e.printStackTrace(response.getWriter());
+        e.printStackTrace();
     }
 
     @Override

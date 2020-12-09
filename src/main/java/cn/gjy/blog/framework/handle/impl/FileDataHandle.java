@@ -2,6 +2,7 @@ package cn.gjy.blog.framework.handle.impl;
 
 import cn.gjy.blog.framework.annotation.Config;
 import cn.gjy.blog.framework.handle.DataHandle;
+import cn.gjy.blog.framework.log.SimpleLog;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,8 @@ import java.util.List;
  */
 @Config(DataHandle.class)
 public class FileDataHandle implements DataHandle {
+
+    private static final SimpleLog log=SimpleLog.log(FileDataHandle.class);
 
     private static final int MAX_READ_SIZE=1000*1024*2;
 
@@ -41,7 +44,7 @@ public class FileDataHandle implements DataHandle {
         OutputStream outputStream = response.getOutputStream();
         try(FileInputStream fileInputStream=new FileInputStream(file)) {
             byte[] arr;
-            System.out.println(fileInputStream.available());
+            log.v(fileInputStream.available()+"");
             if(fileInputStream.available()<=MAX_READ_SIZE){
                 arr=new byte[fileInputStream.available()];
                 fileInputStream.read(arr,0, arr.length);

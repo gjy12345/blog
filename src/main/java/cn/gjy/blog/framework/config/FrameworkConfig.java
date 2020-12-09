@@ -20,6 +20,13 @@ public class FrameworkConfig {
             xssFilter=Boolean.parseBoolean((String) properties.getOrDefault("xss","false"));
             viewRoot= (String) properties.getOrDefault("view.path.root","");
             viewEnd= (String) properties.getOrDefault("view.path.end","");
+            String path= (String) properties.getOrDefault("base.save.file.root",
+                    file.getParentFile().getAbsolutePath()+File.separator+"/fileRoot");
+            baseSaveFileDir=new File(path);
+            if(!FrameworkConfig.baseSaveFileDir.exists()
+            ||FrameworkConfig.baseSaveFileDir.isFile()){
+                FrameworkConfig.baseSaveFileDir.mkdirs();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -30,4 +37,5 @@ public class FrameworkConfig {
     public static String viewRoot;
     public static String viewEnd;
     public static String contentPath;
+    public static File baseSaveFileDir;
 }
