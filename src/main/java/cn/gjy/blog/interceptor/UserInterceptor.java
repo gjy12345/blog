@@ -1,8 +1,13 @@
 package cn.gjy.blog.interceptor;
 
 import cn.gjy.blog.common.ContentString;
+import cn.gjy.blog.dao.UserDao;
 import cn.gjy.blog.framework.annotation.Config;
+import cn.gjy.blog.framework.annotation.InitObject;
 import cn.gjy.blog.framework.http.Interceptor;
+import cn.gjy.blog.framework.log.SimpleLog;
+import cn.gjy.blog.model.SysUser;
+import cn.gjy.blog.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,22 +21,34 @@ import java.lang.reflect.Method;
  */
 @Config(Interceptor.class)
 public class UserInterceptor implements Interceptor {
+
+    private static final SimpleLog log=SimpleLog.log(UserInterceptor.class);
+
+    @InitObject
+    private UserService userService;
+
     @Override
     public String registerPatten() {
-        return "/user/.+?";
+//        return "/user/.+?";
+        return "/user/.*?";
     }
 
     @Override
     public String registerExcludePatten() {
-        return "/user/login";
+//        return "/user/login";
+        return "";
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Method method, Object methodObject) throws Exception {
         if(request.getSession().getAttribute(ContentString.USER_SESSION_TAG) != null)
             return true;
-        response.sendRedirect("redirect:"+request.getContextPath()+"/user/");
-        return false;
+        //测试用
+        SysUser sysUser=userService.getTestUser();
+        request.getSession().setAttribute(ContentString.USER_SESSION_TAG,sysUser);
+        return true;
+//        response.sendRedirect(request.getContextPath()+"/user/");
+//        return false;
     }
 
     @Override

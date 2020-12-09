@@ -2,13 +2,18 @@ package cn.gjy.blog.controller.user;
 
 import cn.gjy.blog.common.ContentString;
 import cn.gjy.blog.framework.annotation.*;
+import cn.gjy.blog.framework.config.FrameworkConfig;
 import cn.gjy.blog.framework.model.Model;
 import cn.gjy.blog.model.CheckResult;
 import cn.gjy.blog.model.MenuModel;
 import cn.gjy.blog.model.SysUser;
+import cn.gjy.blog.service.CommonService;
 import cn.gjy.blog.service.UserService;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -23,6 +28,9 @@ public class UserController {
     @InitObject
     private UserService userService;
 
+    @InitObject
+    private CommonService commonService;
+
     @Route("/")
     public String index(@BindParam(value = ContentString.USER_SESSION_TAG
             ,from = HttpSession.class) SysUser sysUser){
@@ -31,6 +39,15 @@ public class UserController {
         return "user/login";
     }
 
+    /**
+     *
+     * @param sysUser
+     * @param session
+     * @param vcode
+     * @param model
+     * @param referTo 登录后重定向的地址
+     * @return
+     */
     @SuppressWarnings("all")
     @Route(value = "/login",method = Route.HttpMethod.POST)
     public String login(@BindParam SysUser sysUser, HttpSession session
@@ -50,7 +67,7 @@ public class UserController {
         }
         //登录成功
         session.setAttribute(ContentString.USER_SESSION_TAG,loginResult.getData());
-        return dashboard();
+        return "redirect:"+FrameworkConfig.contentPath+ "/user/dashboard";
     }
 
     @Route(value = "/dashboard",method = {Route.HttpMethod.GET})
@@ -60,8 +77,10 @@ public class UserController {
 
     //后台首页
     @Route(value = "/welcome",method = Route.HttpMethod.GET)
-    public String welcome(Model model){
-
+    public String welcome(Model model,@BindParam(value = ContentString.USER_SESSION_TAG,
+            from = HttpSession.class) SysUser user){
+        model.setAttribute("nowTime",commonService.getHourWelcome(null));
+        model.setAttribute("operations",commonService.getUserOperations(user,null));
         return "user/welcome";
     }
 

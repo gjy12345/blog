@@ -15,4 +15,6 @@ public interface UserService {
     MenuModel getUserMenuData();
 
     CheckResult<SysUser> loginUser(SysUser sysUser);
+
+    SysUser getTestUser();
 }

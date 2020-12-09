@@ -10,6 +10,8 @@ import cn.gjy.blog.model.SysUser;
 import cn.gjy.blog.service.UserService;
 import cn.gjy.blog.utils.Md5Utils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,5 +60,14 @@ public class UserServiceImpl implements UserService{
             return CheckResult.createFailResult("密码错误!");
         }
         return CheckResult.createSuccessResult(dbUser,"登录成功");
+    }
+
+    @Override
+    public SysUser getTestUser() {
+        return userDao.selectUserByUsername("test",1);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
     }
 }
