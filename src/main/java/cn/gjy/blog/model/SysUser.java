@@ -23,9 +23,27 @@ public class SysUser {
     @Alias("user_type")
     private Integer userType;
     private String face;
+    private Integer level;
+    private String sign;
 
     public static final int USER=1;
     public static final int ADMIN=0;
+
+    public String getSign() {
+        return sign;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
 
     public String getFace() {
         return face;

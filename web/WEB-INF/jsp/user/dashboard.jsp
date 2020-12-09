@@ -26,7 +26,7 @@ To change this template use File | Settings | File Templates.
 
 	<body>
 		<!-- 顶部开始 -->
-		<div class="container">
+		<div class="container" id="top_container">
 			<div class="logo ">
 				<a href="#">Blog&nbsp;后台管理</a>
 			</div>
@@ -47,7 +47,7 @@ To change this template use File | Settings | File Templates.
 							<a class="loginout" href="${pageContext.request.contextPath}/user/exit">切换帐号</a>
 						</dd>
 						<dd>
-							<a class="loginout" href="./login.html">退出</a>
+							<a class="loginout" href="${pageContext.request.contextPath}/user/exit">退出</a>
 						</dd>
 					</dl>
 				</li>
@@ -73,7 +73,7 @@ To change this template use File | Settings | File Templates.
 				</ul>
 				<div class="layui-tab-content">
 					<div class="layui-tab-item layui-show">
-						<iframe src='${pageContext.request.contextPath}/user/welcome' frameborder="0" scrolling="yes" class="weIframe"></iframe>
+						<iframe src='${pageContext.request.contextPath}/user/welcome' frameborder="0" scrolling="yes" class="weIframe" style="height: 100%"></iframe>
 					</div>
 				</div>
 			</div>
@@ -82,7 +82,7 @@ To change this template use File | Settings | File Templates.
 		<!-- 右侧主体结束 -->
 		<!-- 中部结束 -->
 		<!-- 底部开始 -->
-		<div class="footer">
+		<div class="footer" id="footer">
 			<div class="copyright">© ${blogConfig.year} ${blogConfig.blogName}</div>
 		</div>
 		<!-- 底部结束 -->

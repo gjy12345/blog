@@ -28,6 +28,12 @@ public class SelfStringDataHandle extends StringDataHandle {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, Method method, Object returnData) throws IOException, ServletException {
+        String data= (String) returnData;
+        if(data.contains("redirect:")){
+            //重定向
+            response.sendRedirect(data.replace("redirect:",""));
+            return;
+        }
         request.setAttribute("blogConfig", blogConfig);
         super.handle(request, response, method, returnData);
     }
