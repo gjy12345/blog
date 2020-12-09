@@ -12,4 +12,5 @@ import java.lang.annotation.Target;
 public @interface BindParam {
     String value() default "";
     Class from() default HttpServletRequest.class;
+    String header() default "";
 }

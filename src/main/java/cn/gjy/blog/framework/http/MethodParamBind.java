@@ -33,7 +33,8 @@ public class MethodParamBind {
         Parameter[] parameters = method.getParameters();
         for (int i = 0,l=parameters.length; i < l; i++) {
             if((bindParam=parameters[i].getAnnotation(BindParam.class))!=null){
-                if(bindParam.value().isEmpty()&&bindParam.from()==HttpServletRequest.class){
+                if(bindParam.value().isEmpty()&&bindParam.from()==HttpServletRequest.class
+                        &&bindParam.header().isEmpty()){
                     //按类型绑定 根据对象属性绑定
                     objects[i]=assignmentParamBean(parameters[i].getType(),request);
                 }else if(!bindParam.value().isEmpty()&&bindParam.from()==HttpSession.class){
@@ -42,7 +43,9 @@ public class MethodParamBind {
                 }else if(!bindParam.value().isEmpty()&&bindParam.from()==HttpServletRequest.class) {
                     //获取对于字段的单个值 只能是基础数据类型 不能是对象
                     objects[i]=bindBasicData(bindParam.value(),parameters[i].getType(),request);
-                } else
+                }else if(bindParam.value().isEmpty()&&!bindParam.header().isEmpty()){
+                    objects[i]=changeStringToBasicData(parameters[i].getType(),request.getHeader(bindParam.header()));
+                }else
                     throw new RuntimeException("error bind.");
             }else if(parameters[i].getAnnotation(JsonRequestBody.class)!=null){
                 objects[i]=jsonSerializeBean(request,parameters[i].getType());
@@ -89,6 +92,8 @@ public class MethodParamBind {
     }
 
     private static Object changeStringToBasicData(Class<?> t,String v){
+        if(v==null)
+            return null;
         if(t==String.class)
             return v;
         if(t==Integer.class||t==int.class){
