@@ -38,4 +38,8 @@ public class FrameworkConfig {
     public static String viewEnd;
     public static String contentPath;
     public static File baseSaveFileDir;
+
+    public static String getJspPath(String s) {
+        return FrameworkConfig.viewRoot+s+FrameworkConfig.viewEnd;
+    }
 }

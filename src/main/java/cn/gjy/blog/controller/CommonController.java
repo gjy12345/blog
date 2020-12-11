@@ -1,10 +1,7 @@
 package cn.gjy.blog.controller;
 
 import cn.gjy.blog.common.ContentString;
-import cn.gjy.blog.framework.annotation.BindParam;
-import cn.gjy.blog.framework.annotation.Controller;
-import cn.gjy.blog.framework.annotation.ResponseBody;
-import cn.gjy.blog.framework.annotation.Route;
+import cn.gjy.blog.framework.annotation.*;
 import cn.gjy.blog.framework.config.FrameworkConfig;
 import cn.gjy.blog.model.CheckResult;
 import cn.gjy.blog.model.SysUser;
@@ -27,6 +24,7 @@ import java.util.UUID;
  * @Class CommonController
  * 通用方法
  */
+@CrossDomain
 @Route("/common")
 @Controller
 public class CommonController {
@@ -58,7 +56,14 @@ public class CommonController {
             resultMap.put("message","请您先登录");
             return resultMap;
         }
-        CheckResult<File> checkResult= FileUtils.uploadSingleImage(request,FrameworkConfig.baseSaveFileDir);
+        CheckResult<File> checkResult;
+        try {
+            checkResult= FileUtils.uploadSingleImage(request,FrameworkConfig.baseSaveFileDir);
+        }catch (Exception e){
+            resultMap.put("success",0);
+            resultMap.put("message","文件格式错误或文件过大");
+            return resultMap;
+        }
         if(checkResult.getResult()== CheckResult.State.FAIL){
             resultMap.put("success",0);
             resultMap.put("message",checkResult.getMsg());
@@ -72,12 +77,22 @@ public class CommonController {
 
     @Route("/file")
     public File getUploadFile(@BindParam("fileName") String fileName){
-        if(fileName.contains("../"))
+        //非法访问目录
+        if(fileName.contains("../")||fileName.contains("..\\"))
             return null;
         return new File(FrameworkConfig.baseSaveFileDir,fileName);
     }
 
-    public static void main(String[] args) {
+//    @ResponseBody
+//    @Route(value = "/uploadFromPond",method = {Route.HttpMethod.POST})
+//    public String pondUploadFile(HttpServletRequest request,
+//         @BindParam(value = ContentString.USER_SESSION_TAG,from = HttpSession.class) SysUser user,
+//         @BindParam(value = ContentString.ADMIN_SESSION_TAG,from = HttpSession.class) SysUser admin) throws Exception {
+//        if(user==null&&admin==null)
+//            return "请先登录";
+//        CheckResult<File> checkResult= FileUtils.uploadSingleImage(request,FrameworkConfig.baseSaveFileDir);
+//        return checkResult.getResult()==CheckResult.State.OK?checkResult.getData().getName()
+//                :"";
+//    }
 
-    }
 }

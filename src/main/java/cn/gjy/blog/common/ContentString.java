@@ -12,4 +12,9 @@ public class ContentString {
 
     public static final String V_CODE = "V_CODE_TAG";
 
+    public static final Integer LOCK = 1;
+
+    public static final String CHILD_JSP="child_jsp";
+
+    public static final String BASE_JSP="base";
 }

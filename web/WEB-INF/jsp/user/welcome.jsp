@@ -38,7 +38,7 @@ To change this template use File | Settings | File Templates.
 										<ul class="layui-row layui-col-space10 layui-this">
 											<li class="layui-col-xs3">
 												<a href="http://www.layui.com/doc/" target="_blank">
-													<i class="layui-icon">21</i>
+													<i class="layui-icon">${blogCount}</i>
 													<cite>博客数量</cite>
 												</a>
 											</li>
@@ -167,30 +167,29 @@ To change this template use File | Settings | File Templates.
 						<blockquote class="layui-elem-quote font16">最新博客</blockquote>
 						<div class="col-md-12">
 							<div class="col-md-12">
-								<div class="entry-content clearfix table-bordered" style="padding-bottom: 10px;padding-top: 10px;">
-									<div class="entry-title col-md-10 font16" >
-										<a href="single.html">[博客] Adaptive Vs. Responssssssssssssssssssssssssssssssssssive Layouts And Optimal Text Readability</a>
+								<c:forEach items="${recentBlogs}" var="blog" varStatus="s">
+									<div class="entry-content clearfix table-bordered" style="padding-bottom: 10px;padding-top: 10px;">
+										<div class="entry-title col-md-10 font16" >
+											<a href="single.html">
+													<c:choose>
+														<c:when test="${blog.publicityLevel==7}">
+															[全部可见]
+														</c:when>
+														<c:when test="${blog.publicityLevel==5}">
+															[仅我可见]
+														</c:when>
+														<c:when test="${blog.publicityLevel==6}">
+															[需要密码]
+														</c:when>
+													</c:choose>
+												[博客] ${blog.title}
+											</a>
+										</div>
+										<div class="col-md-2">
+												${blog.createTime}
+										</div>
 									</div>
-									<div class="col-md-2">
-										2020-10-1
-									</div>
-								</div>
-								<div class="entry-content clearfix table-bordered" style="padding-bottom: 10px;padding-top: 10px;">
-									<div class="entry-title col-md-10 font16">
-										<a href="single.html">[博客] Adaptive Vs. Responsive Layouts And Optimal Text Readability</a>
-									</div>
-									<div class="col-md-2">
-										2020-10-1
-									</div>
-								</div>
-								<div class="entry-content clearfix table-bordered" style="padding-bottom: 10px;padding-top: 10px;">
-									<div class="entry-title col-md-10 font16">
-										<a href="single.html">[博客] Adaptive Vs. Responsive Layouts And Optimal Text Readability</a>
-									</div>
-									<div class="col-md-2">
-										2020-10-1
-									</div>
-								</div>
+								</c:forEach>
 							</div>
 						</div>
 					</fieldset>

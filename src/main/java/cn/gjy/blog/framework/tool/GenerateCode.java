@@ -19,7 +19,7 @@ public class GenerateCode {
         QueueDataSourceImpl queueDataSource=new QueueDataSourceImpl();
         ConnectionUtil.setQueueDataSource(queueDataSource);
         Connection connection= ConnectionUtil.getConnection();
-        String table="sys_operation";
+        String table="category";
         ResultSet query = connection.createStatement().executeQuery("select * from " + table);
         ResultSetMetaData metaData = query.getMetaData();
         int columnCount = metaData.getColumnCount();
@@ -63,6 +63,8 @@ public class GenerateCode {
                 case Types.NUMERIC:
                     System.out.println("\tprivate BigDecimal "+columnName+";");
                     break;
+                case Types.LONGVARCHAR:
+                case Types.LONGNVARCHAR:
                 case Types.CHAR:
                 case Types.VARCHAR:
                     System.out.println("\tprivate String "+columnName+";");
@@ -74,6 +76,9 @@ public class GenerateCode {
                 case Types.TIME:
                 case Types.TIMESTAMP:
                     System.out.println("\tprivate Date "+columnName+";");
+                    break;
+                default:
+                    System.out.println(columnName + " " + metaData.getColumnType(i));
                     break;
             }
         }

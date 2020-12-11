@@ -29,8 +29,8 @@ public class StringDataHandle implements DataHandle {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, Method method, Object returnData) throws IOException, ServletException {
         response.setContentType("text/html;charset=utf-8");
-        log.d(FrameworkConfig.viewRoot+returnData+FrameworkConfig.viewEnd);
-        request.getRequestDispatcher(FrameworkConfig.viewRoot+returnData+FrameworkConfig.viewEnd)
+        log.d(FrameworkConfig.getJspPath((String) returnData));
+        request.getRequestDispatcher(FrameworkConfig.getJspPath((String) returnData))
                 .forward(request,response);
     }
 }

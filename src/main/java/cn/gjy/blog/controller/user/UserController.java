@@ -81,6 +81,8 @@ public class UserController {
             from = HttpSession.class) SysUser user){
         model.setAttribute("nowTime",commonService.getHourWelcome(null));
         model.setAttribute("operations",commonService.getUserOperations(user,null));
+        model.setAttribute("blogCount",userService.getUserBlogCount(user));
+        model.setAttribute("recentBlogs",userService.getUserRecentBlogs(user));
         return "user/welcome";
     }
 
@@ -92,15 +94,17 @@ public class UserController {
 
     @Route("/follow")
     public String follow(@BindParam(value = ContentString.USER_SESSION_TAG
-            ,from = HttpSession.class) SysUser sysUser){
-        return "user/follow";
+            ,from = HttpSession.class) SysUser sysUser
+            ,Model model){
+        model.setAttribute(ContentString.CHILD_JSP,FrameworkConfig.getJspPath("user/follow"));
+        return ContentString.BASE_JSP;
     }
 
     //退出登录
     @Route(value = "/exit")
     public String exitLogin(HttpSession session){
         session.invalidate();
-        return "user/login";
+        return "redirect:"+FrameworkConfig.contentPath+ "/user/";
     }
 
 }

@@ -1,9 +1,6 @@
 package cn.gjy.blog.framework.controller;
 
-import cn.gjy.blog.framework.annotation.Config;
-import cn.gjy.blog.framework.annotation.Controller;
-import cn.gjy.blog.framework.annotation.ResponseBody;
-import cn.gjy.blog.framework.annotation.Route;
+import cn.gjy.blog.framework.annotation.*;
 import cn.gjy.blog.framework.config.CharsetConfig;
 import cn.gjy.blog.framework.config.ControllerConfig;
 import cn.gjy.blog.framework.config.FrameworkConfig;
@@ -32,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -248,6 +246,7 @@ public class MainServlet extends HttpServlet {
                 }
                 Object[] objects = MethodParamBind.assignmentMethod(result.getMethod(), req, resp);
                 log.v(url+" "+method);
+                crossDomain(result,resp);
                 Object returnData=result.getMethod().invoke(result.getO(),objects);
                 Class<?> returnType = result.getMethod().getReturnType();
                 if(returnType==Void.class||returnType==void.class){
@@ -278,6 +277,20 @@ public class MainServlet extends HttpServlet {
 
         }catch (Throwable e){
             log.v(e.getMessage());
+        }
+    }
+
+    private Map<Method,Boolean> needCrossHeader=new ConcurrentHashMap<>();
+
+    private void crossDomain(MatchResult result, HttpServletResponse resp) {
+        Boolean r;
+        if ((r=needCrossHeader.get(result.getMethod()))==null) {
+            r=(result.getMethod().getAnnotation(CrossDomain.class)!=null)||
+                    (result.getO().getClass().getAnnotation(CrossDomain.class)!=null);
+            needCrossHeader.put(result.getMethod(),r);
+        }
+        if(r){
+            resp.setHeader("Access-Control-Allow-Origin","*");
         }
     }
 

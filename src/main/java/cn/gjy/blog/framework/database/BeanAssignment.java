@@ -22,6 +22,8 @@ public class BeanAssignment {
 
     private static final Set<Class<?>> basicDataClassSet=new HashSet<>();
 
+    private static final Map<String,Class<?>> basicObjectMap=new HashMap<>();
+
     public static Set<Class<?>> getBasicDataClassSet() {
         return basicDataClassSet;
     }
@@ -41,6 +43,13 @@ public class BeanAssignment {
         basicDataClassSet.add(byte.class);
         basicDataClassSet.add(Byte.class);
         basicDataClassSet.add(Date.class);
+        basicObjectMap.put(int.class.getName(),Integer.class);
+        basicObjectMap.put(double.class.getName(),Double.class);
+        basicObjectMap.put(long.class.getName(),Long.class);
+        basicObjectMap.put(short.class.getName(),Short.class);
+        basicObjectMap.put(float.class.getName(),Float.class);
+        basicObjectMap.put(byte.class.getName(),Byte.class);
+        basicObjectMap.put(boolean.class.getName(),Boolean.class);
     }
 
     public static <T> T assignmentBean(ResultSet resultSet,Class<T> tClass) throws SQLException, IllegalAccessException, InstantiationException, ClassNotFoundException {
@@ -83,8 +92,23 @@ public class BeanAssignment {
                 if (object!=null) {
                     if(object.getClass().equals(tClass)){
                         return (T) object;
-                    }else {
-                        log.e("无法将:"+object.getClass().getName()+" 转换到:"+tClass.getName());
+                    }else if(object instanceof Number&&Number.class.isAssignableFrom(tClass)||
+                            basicDataClassSet.contains(tClass)){
+                        Number number= (Number) object;
+                        if(tClass==Integer.class||tClass==int.class)
+                            return (T) new Integer(number.intValue());
+                        else if(tClass==Double.class||tClass==double.class)
+                            return (T) new Double(number.doubleValue());
+                        else if(tClass==Long.class||tClass==long.class)
+                            return (T) new Long(number.longValue());
+                        else {
+                            log.e("无法将:"+object.getClass().getName()+" 转换到:"+tClass.getName());
+                            throw new RuntimeException("无法将:"+object.getClass().getName()+" 转换到:"+tClass.getName());
+                        }
+                    }else if(tClass==String.class){
+                        return (T) object.toString();
+                    } else{
+                        log.e("无法将: "+object.getClass().getName()+" 转换到:"+tClass.getName());
                         throw new RuntimeException("无法将:"+object.getClass().getName()+" 转换到:"+tClass.getName());
                     }
                 }else
@@ -114,6 +138,8 @@ public class BeanAssignment {
                     case Types.NUMERIC:
                         TypeParseEngine.parseNumeric(type,t,field,resultSet,i);
                         break;
+                    case Types.LONGVARCHAR:
+                    case Types.LONGNVARCHAR:
                     case Types.CHAR:
                     case Types.VARCHAR:
                         TypeParseEngine.parseString(type,t,field,resultSet,i);
@@ -156,7 +182,13 @@ public class BeanAssignment {
         if(infoMap.containsKey(className)){
             return infoMap.get(className);
         }
-        Class<?> c=Class.forName(className);
+        //判断是否是基本数据
+        Class<?> c;
+        if(className.length()<8&&basicObjectMap.containsKey(className)){
+            c=basicObjectMap.get(className);
+        }else {
+            c=Class.forName(className);
+        }
         BeanFieldsInfo info=new BeanFieldsInfo();
         info.fieldMap=new HashMap<>();
         Field[] fields = c.getDeclaredFields();

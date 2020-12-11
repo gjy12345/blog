@@ -1,9 +1,11 @@
 package cn.gjy.blog.service.impl;
 
+import cn.gjy.blog.dao.BlogDao;
 import cn.gjy.blog.dao.UserDao;
 import cn.gjy.blog.framework.annotation.InitObject;
 import cn.gjy.blog.framework.annotation.Service;
 import cn.gjy.blog.framework.config.FrameworkConfig;
+import cn.gjy.blog.model.Article;
 import cn.gjy.blog.model.CheckResult;
 import cn.gjy.blog.model.MenuModel;
 import cn.gjy.blog.model.SysUser;
@@ -25,6 +27,9 @@ public class UserServiceImpl implements UserService{
 
     @InitObject
     private UserDao userDao;
+
+    @InitObject
+    private BlogDao blogDao;
 
     @Override
     public MenuModel getUserMenuData() {
@@ -67,7 +72,14 @@ public class UserServiceImpl implements UserService{
         return userDao.selectUserByUsername("test",1);
     }
 
-    public static void main(String[] args) {
-        System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+    @Override
+    public Integer getUserBlogCount(SysUser user) {
+        return userDao.selectUserBlogCountById(user.getId());
     }
+
+    @Override
+    public List<Article> getUserRecentBlogs(SysUser user) {
+        return blogDao.selectUserBlogs(user.getId(),0,10);
+    }
+
 }

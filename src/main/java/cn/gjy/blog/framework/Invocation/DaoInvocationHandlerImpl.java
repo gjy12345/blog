@@ -4,7 +4,9 @@ import cn.gjy.blog.framework.annotation.*;
 import cn.gjy.blog.framework.config.FrameworkConfig;
 import cn.gjy.blog.framework.database.BeanAssignment;
 import cn.gjy.blog.framework.database.ConnectionHolder;
+import cn.gjy.blog.framework.database.ConnectionUtil;
 import cn.gjy.blog.framework.database.CurdTool;
+import cn.gjy.blog.framework.factory.impl.ObjectFactory;
 import cn.gjy.blog.framework.log.SimpleLog;
 
 import java.lang.annotation.Annotation;
@@ -29,14 +31,16 @@ public class DaoInvocationHandlerImpl<T> implements InvocationHandler {
     private final Map<String,Class<?>> classCache=new HashMap<>();
 
     private final Map<String,SqlType> methodSqlType=new HashMap<>();
+    
+    private final Map<String,CusMethodSql> cusMethodSqlMap=new HashMap<>();
 
 
-    public DaoInvocationHandlerImpl(Class<T> proxyInterface){
+    public DaoInvocationHandlerImpl(Class<T> proxyInterface) throws IllegalAccessException, InstantiationException {
         this.proxyInterface=proxyInterface;
         init();
     }
 
-    private void init(){
+    private void init() throws InstantiationException, IllegalAccessException {
         Set<String> methodNameSet=new HashSet<>();
         this.bindValueInfoMap=new HashMap<>();
         Method[] methods = proxyInterface.getMethods();
@@ -47,7 +51,8 @@ public class DaoInvocationHandlerImpl<T> implements InvocationHandler {
             }
             methodNameSet.add(proxyInterface.getName());
             if(methods[i].getAnnotation(Insert.class)!=null||methods[i].getAnnotation(Update.class)!=null
-            ||methods[i].getAnnotation(Delete.class)!=null||methods[i].getAnnotation(Select.class)!=null){
+            ||methods[i].getAnnotation(Delete.class)!=null||methods[i].getAnnotation(Select.class)!=null
+            ||methods[i].getAnnotation(UseCustomMethod.class)!=null){
                 this.bindValueInfoMap.put(methods[i].getName(),createBindInfo(methods[i]));
             }else{
                 log.e(proxyInterface.getName()+" 方法名没有sql:"+methods[i].getName());
@@ -58,7 +63,14 @@ public class DaoInvocationHandlerImpl<T> implements InvocationHandler {
 
     private static final Pattern pattern=Pattern.compile("#\\{(.+?)\\}");
 
-    private DaoBindValueInfo createBindInfo(Method method){
+    private DaoBindValueInfo createBindInfo(Method method) throws IllegalAccessException, InstantiationException {
+        if(method.getAnnotation(UseCustomMethod.class)!=null){
+            UseCustomMethod useCustomMethod=method.getAnnotation(UseCustomMethod.class);
+            CusMethodSql cusMethodSql = useCustomMethod.value().newInstance();
+            cusMethodSqlMap.put(method.getName(),cusMethodSql);
+            methodSqlType.put(method.getName(),useCustomMethod.sqlType());
+            return null;
+        }
         Annotation[] annotations={method.getAnnotation(Insert.class),
                 method.getAnnotation(Update.class),
                 method.getAnnotation(Select.class),
@@ -144,11 +156,15 @@ public class DaoInvocationHandlerImpl<T> implements InvocationHandler {
         String param;
         for (int i = 0; i < bindValueInfo.keys.size(); i++) {
             param=bindValueInfo.keys.get(i);
-            if(bindValueInfo.isObject.get(param)){
-                System.out.println(param + "  是对象 args下标" + bindValueInfo.objectIndex.get(param));
-            }else {
-                System.out.println(param + "  是字段 args下标" + bindValueInfo.objectIndex.get(param)+" field:"
-                +bindValueInfo.fieldMap.get(param));
+            try {
+                if(bindValueInfo.isObject.get(param)){
+                    System.out.println(param + "  是对象 args下标" + bindValueInfo.objectIndex.get(param));
+                }else {
+                    System.out.println(param + "  是字段 args下标" + bindValueInfo.objectIndex.get(param)+" field:"
+                            +bindValueInfo.fieldMap.get(param));
+                }
+            }catch (Exception e){
+                throw new RuntimeException(param+" 没有找到匹配的字段");
             }
         }
         if(params.size()==argsParam.size())
@@ -167,30 +183,55 @@ public class DaoInvocationHandlerImpl<T> implements InvocationHandler {
             return method.invoke(this,args);
         }
         Object returnValue=null;
+        boolean needReleaseConnection=false;
         try {
-            log.v("SQL           ===>"+sqlMap.get(method.getName()));
-            DaoBindValueInfo info=bindValueInfoMap.get(method.getName());
-            String param;
+            if(ConnectionHolder.getConnection()==null){
+                needReleaseConnection=true;
+                ConnectionHolder.setConnection(ConnectionUtil.getConnection());
+            }
+            SqlType sqlType;
+            DaoBindValueInfo info;
             StringBuilder sb=new StringBuilder();
-            sb.append("Param         ===> ");
-            Object[] sqlArgs=new Object[info.keys.size()];
-            for (int i = 0,l=info.keys.size(); i < l; i++) {
-                param=info.keys.get(i);
-                int index = info.objectIndex.get(param);
-                if(i!=0){
-                    sb.append(" , ");
+            Object[] sqlArgs;
+            String sql;
+            if((info=bindValueInfoMap.get(method.getName()))!=null){
+                sql=sqlMap.get(method.getName());
+                log.v("SQL           ===>"+  sql);
+                String param;
+                sb.append("Param         ===> ");
+                sqlArgs=new Object[info.keys.size()];
+                for (int i = 0,l=info.keys.size(); i < l; i++) {
+                    param=info.keys.get(i);
+                    int index = info.objectIndex.get(param);
+                    if(i!=0){
+                        sb.append(" , ");
+                    }
+                    if(info.isObject.get(param)){
+                        sqlArgs[i]=args[index];
+                    }else {
+                        Field field = info.fieldMap.get(param);
+                        field.setAccessible(true);
+                        Object o = field.get(args[index]);
+                        sqlArgs[i]=o;
+                    }
+                    sb.append(sqlArgs[i]);
                 }
-                if(info.isObject.get(param)){
-                    sqlArgs[i]=args[index];
-                }else {
-                    Field field = info.fieldMap.get(param);
-                    Object o = field.get(args[index]);
-                    sqlArgs[i]=o;
+            }else {
+                CusMethodSql cusMethodSql = cusMethodSqlMap.get(method.getName());
+                CusMethodSql.SqlAndArgs handle = cusMethodSql.handle(args);
+                sqlArgs=handle.getArgs();
+                sql=handle.getSql();
+                log.v("SQL           ===>"+  sql);
+                sb.append("Param         ===> ");
+                for (int i = 0; i < sqlArgs.length; i++) {
+                    if(i!=0){
+                        sb.append(" , ");
+                    }
+                    sb.append(sqlArgs[i]);
                 }
-                sb.append(sqlArgs[i]);
             }
             log.v(sb.toString());
-            SqlType sqlType = methodSqlType.get(method.getName());
+            sqlType = methodSqlType.get(method.getName());
             Class<?> returnType = method.getReturnType();
             log.v("returnType    ====>"+returnType.getName());
             int returnCount=0;
@@ -198,7 +239,7 @@ public class DaoInvocationHandlerImpl<T> implements InvocationHandler {
                 case DELETE:
                 case INSERT:
                 case UPDATE:
-                    Integer count=CurdTool.update(sqlMap.get(method.getName()), ConnectionHolder.getConnection(),
+                    Integer count=CurdTool.update(  sql, ConnectionHolder.getConnection(),
                             sqlArgs);
                     if(returnType==Void.class||returnType==void.class){
                         log.v("舍弃");
@@ -216,7 +257,7 @@ public class DaoInvocationHandlerImpl<T> implements InvocationHandler {
                         if(returnType.isInterface()){
                             returnType=HashMap.class;
                         }
-                        returnValue= CurdTool.selectOne(sqlMap.get(method.getName()),ConnectionHolder.getConnection()
+                        returnValue= CurdTool.selectOne(  sql,ConnectionHolder.getConnection()
                                 ,returnType,sqlArgs);
                     }else if (returnType==List.class||returnType==ArrayList.class){
                         Type genericReturnType = method.getGenericReturnType();
@@ -232,7 +273,7 @@ public class DaoInvocationHandlerImpl<T> implements InvocationHandler {
                                 if(componentType.getName().startsWith(FrameworkConfig.basePackage)
                                         ||getBasicDataClassSet().contains(componentType)
                                         ||Map.class.isAssignableFrom(componentType)){
-                                    returnValue=CurdTool.selectList(sqlMap.get(method.getName()),ConnectionHolder.getConnection(),
+                                    returnValue=CurdTool.selectList(  sql,ConnectionHolder.getConnection(),
                                             componentType,sqlArgs);
                                     returnCount=((List)returnValue).size();
                                 }else {
@@ -244,11 +285,11 @@ public class DaoInvocationHandlerImpl<T> implements InvocationHandler {
                         }
                     }else if(returnType.getName().startsWith(FrameworkConfig.basePackage)
                             ||getBasicDataClassSet().contains(returnType)){
-                        returnValue= CurdTool.selectOne(sqlMap.get(method.getName()),ConnectionHolder.getConnection()
+                        returnValue= CurdTool.selectOne(  sql,ConnectionHolder.getConnection()
                                 ,returnType,sqlArgs);
                         returnCount=(returnValue==null?0:1);
                     }else if(returnType.isArray()){
-                        returnValue=CurdTool.selectArray(sqlMap.get(method.getName()),ConnectionHolder.getConnection()
+                        returnValue=CurdTool.selectArray(  sql,ConnectionHolder.getConnection()
                                 ,returnType.getComponentType(),sqlArgs);
                         returnCount=(Array.getLength(returnValue));
                     }else
@@ -260,6 +301,12 @@ public class DaoInvocationHandlerImpl<T> implements InvocationHandler {
         }catch (Exception e){
             log.e(e.getMessage());
             throw e;
+        }
+        finally {
+            if(needReleaseConnection){
+                ConnectionUtil.releaseConnect(ConnectionHolder.getConnection());
+                ConnectionHolder.removeConnection();
+            }
         }
     }
 
@@ -275,7 +322,7 @@ public class DaoInvocationHandlerImpl<T> implements InvocationHandler {
         private List<String> keys;
     }
 
-    private enum SqlType{
+    public enum SqlType{
         INSERT,UPDATE,DELETE,SELECT
     }
 }

@@ -84,5 +84,6 @@ public class SysOperation {
         public static final int AGREE_BLOG=5;//赞同博客 点赞
         public static final int FOLLOW=6;//关注用户
         public static final int LOOK_BLOG=7;//浏览博客
+        public static final int ADD_NEW_CATEGORY=8;
     }
 }

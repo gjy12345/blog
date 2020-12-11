@@ -31,7 +31,7 @@ public class FileUtils {
         DiskFileItemFactory factory = new DiskFileItemFactory();
         ServletFileUpload upload = new ServletFileUpload(factory);
         upload.setHeaderEncoding("UTF-8");
-        upload.setFileSizeMax(1024*1024);
+        upload.setFileSizeMax(1024*1024*10);
         List<FileItem> items = upload.parseRequest(request);
         int count=0,fileIndex=0;
         for (int i = 0; i < items.size(); i++) {

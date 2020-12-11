@@ -128,7 +128,14 @@ public class ObjectFactory {
 
     private void initDao(List<Class<?>> dao) {
         dao.stream().forEach(aClass -> {
-            Object o=new DaoInvocationHandlerImpl<>(aClass).getProxy();
+            Object o= null;
+            try {
+                o = new DaoInvocationHandlerImpl<>(aClass).getProxy();
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.e("创建dao失败:"+e.getMessage());
+                return;
+            }
             objectMap.put(aClass,aClass.cast(o));
         });
     }

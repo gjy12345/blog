@@ -1,8 +1,11 @@
 package cn.gjy.blog.service;
 
+import cn.gjy.blog.model.Article;
 import cn.gjy.blog.model.CheckResult;
 import cn.gjy.blog.model.MenuModel;
 import cn.gjy.blog.model.SysUser;
+
+import java.util.List;
 
 /**
  * @Author gujianyang
@@ -17,4 +20,8 @@ public interface UserService {
     CheckResult<SysUser> loginUser(SysUser sysUser);
 
     SysUser getTestUser();
+
+    Integer getUserBlogCount(SysUser user);
+
+    List<Article> getUserRecentBlogs(SysUser user);
 }

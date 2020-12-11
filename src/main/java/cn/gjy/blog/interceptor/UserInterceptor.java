@@ -44,6 +44,7 @@ public class UserInterceptor implements Interceptor {
         if(request.getSession().getAttribute(ContentString.USER_SESSION_TAG) != null)
             return true;
         //测试用
+        //添加重定向地址到session
         SysUser sysUser=userService.getTestUser();
         request.getSession().setAttribute(ContentString.USER_SESSION_TAG,sysUser);
         return true;

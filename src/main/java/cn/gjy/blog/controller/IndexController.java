@@ -3,6 +3,7 @@ package cn.gjy.blog.controller;
 import cn.gjy.blog.framework.annotation.Controller;
 import cn.gjy.blog.framework.annotation.InitObject;
 import cn.gjy.blog.framework.annotation.Route;
+import cn.gjy.blog.framework.config.FrameworkConfig;
 import cn.gjy.blog.framework.model.Model;
 import cn.gjy.blog.service.ArticleService;
 
@@ -20,6 +21,8 @@ public class IndexController {
     //首页 显示推荐
     @Route(value = "/",method = {Route.HttpMethod.GET, Route.HttpMethod.POST})
     public String index(Model model){
-        return "index";
+        model.setAttribute("child_jsp", FrameworkConfig.getJspPath("index"));
+        model.setAttribute("recent_blog",articleService.selectRecentBlogs());
+        return "base";
     }
 }
