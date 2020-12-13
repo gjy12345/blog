@@ -158,9 +158,9 @@ public class DaoInvocationHandlerImpl<T> implements InvocationHandler {
             param=bindValueInfo.keys.get(i);
             try {
                 if(bindValueInfo.isObject.get(param)){
-                    System.out.println(param + "  是对象 args下标" + bindValueInfo.objectIndex.get(param));
+                    log.d(param + "  是对象 args下标" + bindValueInfo.objectIndex.get(param));
                 }else {
-                    System.out.println(param + "  是字段 args下标" + bindValueInfo.objectIndex.get(param)+" field:"
+                    log.d(param + "  是字段 args下标" + bindValueInfo.objectIndex.get(param)+" field:"
                             +bindValueInfo.fieldMap.get(param));
                 }
             }catch (Exception e){
@@ -223,11 +223,11 @@ public class DaoInvocationHandlerImpl<T> implements InvocationHandler {
                 sql=handle.getSql();
                 log.v("SQL           ===>"+  sql);
                 sb.append("Param         ===> ");
-                for (int i = 0; i < sqlArgs.length; i++) {
+                for (int i = 0; i < handle.getArgs().length; i++) {
                     if(i!=0){
                         sb.append(" , ");
                     }
-                    sb.append(sqlArgs[i]);
+                    sb.append(handle.getArgs()[i]);
                 }
             }
             log.v(sb.toString());
