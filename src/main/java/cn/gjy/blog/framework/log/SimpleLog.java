@@ -1,5 +1,7 @@
 package cn.gjy.blog.framework.log;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.util.Date;
 
@@ -13,6 +15,13 @@ public final class SimpleLog {
     private String className;
     private DateFormat dateFormat=DateFormat.getDateTimeInstance();
 
+    private static final PrintStream out,err;
+
+    static {
+        out=System.out;
+        err=System.err;
+    }
+
     private SimpleLog(Class<?> c){
         this.c=c;
         this.className=c.getName();
@@ -23,18 +32,18 @@ public final class SimpleLog {
     }
 
     public void v(String s){
-        System.out.println("["+dateFormat.format(new Date())+"]  "+className+":  "+s);
+        out.println("[Verbose] ["+dateFormat.format(new Date())+"]  "+className+":  "+s);
     }
 
     public void d(String s){
-        v(s);
+        out.println("[Debug] ["+dateFormat.format(new Date())+"]  "+className+":  "+s);
     }
 
     public void i(String s){
-        v(s);
+        out.println("[Info] ["+dateFormat.format(new Date())+"]  "+className+":  "+s);
     }
 
     public void e(String s) {
-        System.err.println("["+dateFormat.format(new Date())+"]  "+className+":  "+s);
+        err.println("[Error] ["+dateFormat.format(new Date())+"]  "+className+":  "+s);
     }
 }
