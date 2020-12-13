@@ -6,6 +6,7 @@ import cn.gjy.blog.dao.CommonDao;
 import cn.gjy.blog.framework.annotation.InitObject;
 import cn.gjy.blog.framework.annotation.Service;
 import cn.gjy.blog.framework.annotation.Transactional;
+import cn.gjy.blog.framework.controller.HttpRequestUtil;
 import cn.gjy.blog.framework.log.SimpleLog;
 import cn.gjy.blog.framework.tool.XssTool;
 import cn.gjy.blog.model.*;
@@ -14,6 +15,7 @@ import cn.gjy.blog.utils.BlogUtil;
 import cn.gjy.blog.utils.StringUtils;
 import cn.gjy.blog.utils.TimeUtils;
 
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -83,6 +85,7 @@ public class BlogServiceImpl implements BlogService{
         if(StringUtils.isEmptyString(category.getName())){
             return CheckResult.createFailResult("分类名不能为空!");
         }
+        category.setName(category.getName().trim());
         int num=blogDao.selectUserCategoryByName(category.getName(),sysUser.getId());
         if(num>0)
             return CheckResult.createFailResult("分类名已存在!");
@@ -96,10 +99,76 @@ public class BlogServiceImpl implements BlogService{
         int result=blogDao.addNewCategory(category);
         if(result==1){
             commonDao.insertLog(sysUser.getId(),SysOperation.OperationType.ADD_NEW_CATEGORY,
-                    "添加分类:"+category.getName(),category.getCreateTime(),ip,"web");
+                    "添加分类:"+category.getName(),category.getCreateTime(),ip,ContentString.CLIENT_WEB);
         }
         return result==1?CheckResult.createSuccessResult(null,"添加成功!"):
                 CheckResult.createFailResult("添加失败");
+    }
+
+    //删除分类 并将分类下的博客设置为未分类
+    @Override
+    public CheckResult<Void> deleteCategory(Integer id, SysUser sysUser) {
+        if(id==null)
+            return CheckResult.createFailResult("分类编号为空!");
+        Category category=blogDao.selectUserCategoryById(id,sysUser.getId());
+        if(category==null)
+            return CheckResult.createFailResult("没有找到此分类!请检查是否已被删除.");
+        if(category.getLock()==null)
+            return CheckResult.createFailResult("锁定参数错误!");
+        int result = blogDao.deleteCategoryById(id);
+        if(result==1){
+            blogDao.resetBlogsCategoryByCategoryId(id);
+            commonDao.insertLog(sysUser.getId(),SysOperation.OperationType.ADD_NEW_CATEGORY,
+                        "删除分类:"+category.getName(),
+                    TimeUtils.getSimpleDateFormat().format(System.currentTimeMillis()),
+                    HttpRequestUtil.getRequest().getRemoteAddr(),ContentString.CLIENT_WEB);
+            return CheckResult.createSuccessResult(null,"删除成功");
+        }
+        return CheckResult.createFailResult("删除失败");
+    }
+
+    @Override
+    public CheckResult<Void> editCategory(Category category, SysUser sysUser) {
+        if(category==null||category.getId()==null)
+            return CheckResult.createFailResult("参数有误!");
+        Category dbC=blogDao.selectUserCategoryById(category.getId(),sysUser.getId());
+        if(dbC==null)
+            return CheckResult.createFailResult("无此分类");
+        category.setName(XssTool.encode(category.getName()));
+        if(!category.getName().equals(dbC.getName())
+        &&blogDao.selectUserCategoryByName(category.getName(), sysUser.getId())!=0)
+            //分类名与数据库id对应的分类名一致
+            return CheckResult.createFailResult("分类名重复");
+        category.setCreateUser(sysUser.getId());
+        category.setDescription(XssTool.encode(category.getDescription()));
+        category.setUpdateTime(TimeUtils.getSimpleDateFormat().format(System.currentTimeMillis()));
+        if(blogDao.updateCategory(category)==0){
+            return CheckResult.createFailResult("修改失败");
+        }
+        commonDao.insertLog(sysUser.getId(),SysOperation.OperationType.ADD_NEW_CATEGORY,
+                "修改分类:"+dbC.getName()+" 为: "+category.getName(),
+                category.getUpdateTime(),
+                HttpRequestUtil.getRequest().getRemoteAddr(),ContentString.CLIENT_WEB);
+        return CheckResult.createSuccessResult(null,"修改成功!");
+    }
+
+    @Override
+    public CheckResult<Void> lockOrUnlock(Integer id, Integer lock, SysUser user) {
+        if(lock==null)
+            return CheckResult.createFailResult("锁定参数错误");
+        else if(id==null)
+            return CheckResult.createFailResult("参数错误");
+        Category category=blogDao.selectUserCategoryById(id,user.getId());
+        if(category!=null){
+            if(blogDao.updateCategoryLock(id,lock)==0){
+                return CheckResult.createFailResult("修改状态失败");
+            }
+            commonDao.insertLog(user.getId(),SysOperation.OperationType.ADD_NEW_CATEGORY,
+                    (lock.equals(ContentString.LOCK)?"锁定":"解锁")+"分类:"+category.getName(),
+                    TimeUtils.getSimpleDateFormat().format(System.currentTimeMillis()),
+                    HttpRequestUtil.getRequest().getRemoteAddr(),ContentString.CLIENT_WEB);
+        }
+        return CheckResult.createFailResult("无此分类");
     }
 
     //检测并格式化文章
@@ -144,10 +213,9 @@ public class BlogServiceImpl implements BlogService{
         article.setUrl(UUID.randomUUID().toString().replace("-",""));
         //article.setType(); 检测类型
         if(article.getType()!=null){
-            Category category=blogDao.selectUserCategoryById(article.getType());
-            if(!category.getCreateUser().equals(sysUser.getId())){
-                return CheckResult.createFailResult("此分类并不属于您.");
-            }
+            Category category=blogDao.selectUserCategoryById(article.getType(),sysUser.getId());
+            if(category==null)
+                return CheckResult.createFailResult("没有此分类");
         }
         if(article.getKeywords()==null||article.getKeywords().trim().isEmpty()){
             article.setKeywords("无");

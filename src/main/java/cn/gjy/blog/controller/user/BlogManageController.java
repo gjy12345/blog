@@ -71,12 +71,12 @@ public class BlogManageController {
 
     @Route("/article/type")
     public String toBlogTypes(){
-        return "user/blog_category";
+        return "blog/blog_category";
     }
 
     @Route("/article/type/add")
     public String toAddCategory(){
-        return "user/blog_category_add";
+        return "blog/blog_category_add";
     }
 
     @ResponseBody
@@ -85,5 +85,34 @@ public class BlogManageController {
                                          @BindParam(value = ContentString.USER_SESSION_TAG,from = HttpSession.class)
                                                  SysUser sysUser,HttpServletRequest request){
         return blogService.addUserCategory(sysUser,category,request.getRemoteAddr());
+    }
+
+    @ResponseBody
+    @Route(value = "/article/type/delete",method = Route.HttpMethod.POST)
+    public CheckResult<Void> deleteCategory(@BindParam("id") Integer id
+        ,@BindParam(value = ContentString.USER_SESSION_TAG,from = HttpSession.class) SysUser sysUser){
+        return blogService.deleteCategory(id,sysUser);
+    }
+
+    @Route("/article/type/edit")
+    public String toEditCategory(@BindParam("id") Integer id,Model model
+    ,@BindParam(value = ContentString.USER_SESSION_TAG,from = HttpSession.class) SysUser sysUser){
+        Category category = blogDao.selectUserCategoryById(id,sysUser.getId());
+        model.setAttribute("category",category);
+        return "blog/blog_category_edit";
+    }
+
+    @ResponseBody
+    @Route(value = "/article/type/edit",method = {Route.HttpMethod.POST})
+    public CheckResult<Void> editCategory(@JsonRequestBody Category category,
+        @BindParam(value = ContentString.USER_SESSION_TAG,from = HttpSession.class)SysUser sysUser){
+        return blogService.editCategory(category,sysUser);
+    }
+
+    @ResponseBody
+    @Route(value = "/article/type/lockOrUnlock",method = {Route.HttpMethod.POST})
+    public CheckResult<Void> lockOrUnlock(@BindParam("id") Integer id,@BindParam(value = ContentString.USER_SESSION_TAG,
+    from = HttpSession.class) SysUser user,@BindParam("lock")Integer lock){
+        return blogService.lockOrUnlock(id,lock,user);
     }
 }

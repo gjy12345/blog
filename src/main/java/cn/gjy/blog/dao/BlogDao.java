@@ -45,9 +45,22 @@ public interface BlogDao {
             "order by id desc limit #{start},#{end}")
     List<Article> selectUserBlogs(@BindParam("id") Integer id,@BindParam("start") int s,@BindParam("end") int e);
 
-    @Select("select * from category where id=#{id}")
-    Category selectUserCategoryById(@BindParam("id") Integer id);
+    @Select("select * from category where id=#{id} and user_id=#{userId}")
+    Category selectUserCategoryById(@BindParam("id") Integer id,@BindParam("userId") Integer userId);
 
     @Select("select count(*) from article where type=#{type}")
     int getBlogCountByCategory(@BindParam("type") Integer id);
+
+    @Delete("delete from category where id=#{id}")
+    int deleteCategoryById(@BindParam("id") Integer id);
+
+    @Update("update article set type=null where type=#{type};")
+    int resetBlogsCategoryByCategoryId(@BindParam("type") Integer id);
+
+    @Update("update category set name=#{name},category.lock=#{lock},description=#{description}," +
+            "update_time=#{update_time} where id=#{id};")
+    int updateCategory(Category category);
+
+    @Update("update category set category.lock=#{lock} where id=#{id};")
+    int updateCategoryLock(@BindParam("id") Integer id,@BindParam("lock") Integer lock);
 }

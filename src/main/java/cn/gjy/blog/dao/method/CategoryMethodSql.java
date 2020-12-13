@@ -26,8 +26,8 @@ public class CategoryMethodSql {
                 args[index++]=category.getName();
             }
             if(category.getLock()!=null){
-                sql.append("and lock=? ");
-                args[index++]=category.getName();
+                sql.append("and category.lock=? ");
+                args[index++]=category.getLock();
             }
             return SqlAndArgs.build(sql.toString(), Arrays.copyOf(args,index));
         }
@@ -52,8 +52,8 @@ public class CategoryMethodSql {
                 args[index++]=category.getName();
             }
             if(category.getLock()!=null){
-                sql.append("and lock=? ");
-                args[index++]=category.getName();
+                sql.append("and category.lock=? ");
+                args[index++]=category.getLock();
             }
             sql.append(" order by id desc limit ").append(page*10).append(", ").append(size);
             return SqlAndArgs.build(sql.toString(), Arrays.copyOf(args,index));

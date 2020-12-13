@@ -16,4 +16,10 @@ public interface BlogService {
     TableData<List<Category>> getUserCategories(Integer page, SysUser sysUser, Category category);
 
     CheckResult<Void> addUserCategory(SysUser sysUser, Category category,String ip);
+
+    CheckResult<Void> deleteCategory(Integer id, SysUser sysUser);
+
+    CheckResult<Void> editCategory(Category category, SysUser sysUser);
+
+    CheckResult<Void> lockOrUnlock(Integer id, Integer lock, SysUser user);
 }

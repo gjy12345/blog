@@ -17,4 +17,5 @@ public class ContentString {
     public static final String CHILD_JSP="child_jsp";
 
     public static final String BASE_JSP="base";
+    public static final String CLIENT_WEB = "web";
 }
