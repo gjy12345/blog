@@ -22,6 +22,7 @@ public class ObjectFactory {
     private Map<Class<?>,Object> realObjectMap;//存放被代理对象真实的object
 
     public ObjectFactory() throws Exception {
+        initMap();
         this.classes= ClassTool.loadProjectAllClasses();
     }
 
@@ -31,13 +32,10 @@ public class ObjectFactory {
 
     public ObjectFactory(List<Class<?>> classes){
         this.classes=classes;
+        initMap();
     }
 
-    public Map<Class<?>, Object> getObjectMap() {
-        return objectMap;
-    }
-
-    public void init() throws IllegalAccessException {
+    private void initMap(){
         objectMap=new HashMap<Class<?>, Object>(){
             @Override
             public Object put(Class<?> key, Object value) {
@@ -47,6 +45,12 @@ public class ObjectFactory {
                 return super.put(key, value);
             }
         };
+    }
+    public Map<Class<?>, Object> getObjectMap() {
+        return objectMap;
+    }
+
+    public void init() throws IllegalAccessException {
         objectMap.put(this.getClass(),this);
         realObjectMap=new HashMap<>();
         List<Class<?>> services=new ArrayList<>();
@@ -117,6 +121,8 @@ public class ObjectFactory {
         Object o;
         try {
             for (Class<?> aClass : componentList) {
+                if(objectMap.containsKey(aClass))
+                    continue;
                 o=aClass.newInstance();
                 objectMap.put(aClass,o);
             }
@@ -166,9 +172,6 @@ public class ObjectFactory {
     }
 
     public Object getObjectByClass(Class<?> aClass) throws IllegalAccessException, InstantiationException {
-        if(this.objectMap==null){
-            this.objectMap=new HashMap<>();
-        }
         Object t;
         if((t=this.objectMap.get(aClass))==null){
             t=aClass.newInstance();
@@ -176,5 +179,9 @@ public class ObjectFactory {
 
         }
         return t;
+    }
+
+    public void putObject(Class<?> c, Object o) {
+        this.objectMap.put(c,o);
     }
 }

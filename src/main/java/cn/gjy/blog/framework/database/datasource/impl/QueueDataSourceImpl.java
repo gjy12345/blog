@@ -29,6 +29,8 @@ public class QueueDataSourceImpl extends BaseQueueDataSourceImpl {
 
     private static final SimpleLog log=SimpleLog.log(QueueDataSourceImpl.class);
 
+    private static QueueDataSourceImpl instance=null;
+
     private int maxSize;
     private int initSize;
     private int testWait;
@@ -42,10 +44,14 @@ public class QueueDataSourceImpl extends BaseQueueDataSourceImpl {
     private transient boolean isStop=false;
 
     public QueueDataSourceImpl(){
-        init();
+        if(instance==null)
+            init();
+        else
+            throw new RuntimeException("此连接池已被初始化.");
     }
 
     protected void init(){
+        instance=this;
         try {
             File file=new File(this.getClass().getResource("/db.properties").getFile());
             Properties properties=new Properties();
@@ -64,7 +70,7 @@ public class QueueDataSourceImpl extends BaseQueueDataSourceImpl {
             log.v("初始化线程池");
             initQueue();
             log.v("初始化完毕,连接数:"+this.connectionsQueue.size());
-        } catch (IOException | ClassNotFoundException | SQLException | InstantiationException | IllegalAccessException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -156,12 +162,15 @@ public class QueueDataSourceImpl extends BaseQueueDataSourceImpl {
 
     @Override
     public void close() {
-        Iterator<Connection> iterator = this.connectionsQueue.iterator();
-        while (iterator.hasNext()){
+        int index=0;
+        Connection connection;
+        while ((connection=this.connectionsQueue.poll())!=null){
             try {
-                iterator.next().close();
+                index++;
+                connection.close();
+                log.v("关闭连接:"+index);
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
         }
         this.isStop=true;

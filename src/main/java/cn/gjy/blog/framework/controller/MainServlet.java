@@ -5,6 +5,7 @@ import cn.gjy.blog.framework.config.CharsetConfig;
 import cn.gjy.blog.framework.config.ControllerConfig;
 import cn.gjy.blog.framework.config.FrameworkConfig;
 import cn.gjy.blog.framework.database.datasource.QueueDataSource;
+import cn.gjy.blog.framework.database.datasource.impl.QueueDataSourceImpl;
 import cn.gjy.blog.framework.factory.DataHandleFactory;
 import cn.gjy.blog.framework.factory.InterceptorFactory;
 import cn.gjy.blog.framework.handle.DataHandle;
@@ -23,6 +24,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -165,6 +167,7 @@ public class MainServlet extends HttpServlet {
                         }
                         field.setAccessible(true);
                         field.set(this,objectFactory.getObjectByClass(aClass));
+                        objectFactory.putObject(config.value(),objectFactory.getObjectByClass(aClass));
                         log.v("注意 类型:" + field.getType().getName() + " 成功注入.");
                         paramsClassLevelMap.put(config.value(),config.level());
                     }else {
@@ -227,6 +230,31 @@ public class MainServlet extends HttpServlet {
         execute(req,resp, Route.HttpMethod.POST);
     }
 
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        errorHandle.onNoSuchMethod(getUrl(req),req,resp,"delete");
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        errorHandle.onNoSuchMethod(getUrl(req),req,resp,"put");
+    }
+
+    @Override
+    protected void doHead(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        errorHandle.onNoSuchMethod(getUrl(req),req,resp,"head");
+    }
+
+    @Override
+    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        errorHandle.onNoSuchMethod(getUrl(req),req,resp,"options");
+    }
+
+    @Override
+    protected void doTrace(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        errorHandle.onNoSuchMethod(getUrl(req),req,resp,"trace");
+    }
+
     private void execute(HttpServletRequest req, HttpServletResponse resp, Route.HttpMethod method){
         String url=getUrl(req);
         MatchResult result=null;
@@ -244,6 +272,7 @@ public class MainServlet extends HttpServlet {
                     //对参数进行xss转义
                     req=new XssHttpServletRequest(req);
                 }
+                HttpRequestUtil.setRequest(req);
                 Object[] objects = MethodParamBind.assignmentMethod(result.getMethod(), req, resp);
                 log.v(url+" "+method);
                 crossDomain(result,resp);
@@ -275,8 +304,8 @@ public class MainServlet extends HttpServlet {
                 ee.printStackTrace();
             }
 
-        }catch (Throwable e){
-            log.v(e.getMessage());
+        } finally {
+            HttpRequestUtil.removeRequest();
         }
     }
 
