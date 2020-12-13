@@ -27,6 +27,7 @@ public class FrameworkConfig {
             ||FrameworkConfig.baseSaveFileDir.isFile()){
                 FrameworkConfig.baseSaveFileDir.mkdirs();
             }
+            dbTooMuchResultException=Boolean.parseBoolean((String) properties.getOrDefault("db.much.result.exception","false"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -38,6 +39,7 @@ public class FrameworkConfig {
     public static String viewEnd;
     public static String contentPath;
     public static File baseSaveFileDir;
+    public static boolean dbTooMuchResultException;
 
     public static String getJspPath(String s) {
         return FrameworkConfig.viewRoot+s+FrameworkConfig.viewEnd;

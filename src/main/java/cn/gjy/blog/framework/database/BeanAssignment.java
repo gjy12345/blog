@@ -57,6 +57,9 @@ public class BeanAssignment {
             return null;
         }
         if (!resultSet.isLast()) {
+            if(FrameworkConfig.dbTooMuchResultException){
+                throw new RuntimeException("返回结果不唯一!");
+            }
             log.e("有多个结果被丢弃，因为当前转换模式为:转换单个对象");
         }
         return assignmentBean(resultSet,tClass,getBeanFields(tClass.getName()),resultSet.getMetaData());
