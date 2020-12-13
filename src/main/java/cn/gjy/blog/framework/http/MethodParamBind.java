@@ -2,6 +2,7 @@ package cn.gjy.blog.framework.http;
 
 import cn.gjy.blog.framework.annotation.BindParam;
 import cn.gjy.blog.framework.annotation.JsonRequestBody;
+import cn.gjy.blog.framework.annotation.RequestBody;
 import cn.gjy.blog.framework.config.FrameworkConfig;
 import cn.gjy.blog.framework.log.SimpleLog;
 import cn.gjy.blog.framework.model.Model;
@@ -47,7 +48,8 @@ public class MethodParamBind {
                     objects[i]=changeStringToBasicData(parameters[i].getType(),request.getHeader(bindParam.header()));
                 }else
                     throw new RuntimeException("error bind.");
-            }else if(parameters[i].getAnnotation(JsonRequestBody.class)!=null){
+            }else if(parameters[i].getAnnotation(JsonRequestBody.class)!=null
+            ||parameters[i].getAnnotation(RequestBody.class)!=null){
                 objects[i]=jsonSerializeBean(request,parameters[i].getType());
             }
         }
