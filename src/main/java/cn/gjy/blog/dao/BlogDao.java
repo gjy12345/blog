@@ -45,7 +45,7 @@ public interface BlogDao {
             "order by id desc limit #{start},#{end}")
     List<Article> selectUserBlogs(@BindParam("id") Integer id,@BindParam("start") int s,@BindParam("end") int e);
 
-    @Select("select * from category where id=#{id} and user_id=#{userId}")
+    @Select("select * from category where id=#{id} and create_user=#{userId}")
     Category selectUserCategoryById(@BindParam("id") Integer id,@BindParam("userId") Integer userId);
 
     @Select("select count(*) from article where type=#{type}")

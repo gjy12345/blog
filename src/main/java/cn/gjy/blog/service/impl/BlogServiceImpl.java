@@ -167,6 +167,7 @@ public class BlogServiceImpl implements BlogService{
                     (lock.equals(ContentString.LOCK)?"锁定":"解锁")+"分类:"+category.getName(),
                     TimeUtils.getSimpleDateFormat().format(System.currentTimeMillis()),
                     HttpRequestUtil.getRequest().getRemoteAddr(),ContentString.CLIENT_WEB);
+            return CheckResult.createSuccessResult(null,"修改成功");
         }
         return CheckResult.createFailResult("无此分类");
     }

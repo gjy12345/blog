@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/weadmin/static/css/font.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/static/weadmin/static/css/weadmin.css">
     <script src="${pageContext.request.contextPath}/static/blog/jquery-2.1.3.min.js"></script>
-    <script src="${pageContext.request.contextPath}/static/weadmin/lib/layui/lay/modules/element.js"></script>
 </head>
 
 <body>
@@ -145,7 +144,7 @@
             html = html + '<tr id="line' + (i * page + 1) + '"><td>' + (i + 1) + '</td>'
                 + '<td id="name' + (i + 1) + '">' + data[i].name + '</td>'
                 + '<td>' + data[i].blogUseCount + '</td>'
-                + '<td id="state' + (page + 1) + '"><span class="layui-btn  layui-btn-xs ' +
+                + '<td id="state' + (i + 1) + '"><span class="layui-btn  layui-btn-xs ' +
                 (data[i].lock == 1 ? 'layui-btn-danger' : 'layui-btn-normal')
                 + '">' + (data[i].lock == 1 ? '停用' : '启用')
                 + '</span></td>'
@@ -154,8 +153,8 @@
                 + '<td>' +
                 '<button class="layui-btn layui-btn-sm" onclick="showEdit(' + data[i].id + ')">编辑</button> ' +
                 (data[i].lock == 1 ?
-                    '<button onclick="setLockOrUnlock(0,' + (i * page + 1) + ',' + data[i].id + ')" class="layui-btn layui-btn-normal layui-btn-sm">启用</button>'
-                    : '<button onclick="setLockOrUnlock(1,' + (i * page + 1) + ',' + data[i].id + ')" class="layui-btn layui-btn-sm layui-btn-warm">禁用</button>') +
+                    '<button id="lock_change_'+(i+1)+'" onclick="setLockOrUnlock(0,' + (i  + 1) + ',' + data[i].id + ')" class="layui-btn layui-btn-normal layui-btn-sm">启用</button>'
+                    : '<button id="lock_change_'+(i+1)+'" onclick="setLockOrUnlock(1,' + (i + 1) + ',' + data[i].id + ')" class="layui-btn layui-btn-sm layui-btn-warm">禁用</button>') +
                 '<button class="layui-btn layui-btn-sm layui-btn-danger"' +
                 ' onclick="deleteCategory(' + data[i].id + ',' + (i + 1) + ')">删除</button>'
                 +
@@ -206,7 +205,6 @@
     }
 
     function setLockOrUnlock(change_state, row_index, id) {
-        let statue = $("#state" + row_index);
         let name = $("#name" + row_index).text();
         layer.confirm('是否确认' + (change_state == 0 ? '禁用' : '启用') + '类型:' + name + "?", function (index) {
             $.ajax({
@@ -214,17 +212,12 @@
                 type: 'post',
                 data: {id: id, lock: change_state},
                 success: function (data) {
-                    let html;
                     if (data.result === 1) {
                         layer.msg(change_state === 0 ? '启用成功' : '禁用成功');
-                        if (change_state === 0)
-                            html = '<span class="layui-btn  layui-btn-xs layui-btn-normal">启用</span>';
-                        else
-                            html = '<span class="layui-btn  layui-btn-xs layui-btn-danger">禁用</span>';
+                        initData(currentPage)
                     } else {
                         layer.msg(data.msg);
                     }
-                    statue.html(html);
                     layer.close(index);
                 },
                 error: function (data) {
