@@ -4,6 +4,7 @@ import cn.gjy.blog.framework.annotation.Route;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.lang.reflect.Method;
 
 //异常处理
@@ -13,4 +14,5 @@ public interface ErrorHandle {
 
     void onUrlNotMatch(String url, Route.HttpMethod m, HttpServletRequest request, HttpServletResponse response) throws Exception;
 
+    void onNoSuchMethod(String url,HttpServletRequest request,HttpServletResponse response,String httpMethod) throws IOException;
 }
