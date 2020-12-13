@@ -36,13 +36,13 @@ public class StringUrlMatchEngine implements UrlMatchEngine {
         for (int i = 0; i < methods.length; i++) {
             if(methods[i]== Route.HttpMethod.GET){
                 if(getMethodMap.containsKey(url)){
-                    throw new RuntimeException("get route 重复");
+                    throw new RuntimeException("get route 重复:"+url);
                 }
                 getMethodMap.put(url,m);
                 getObjectMap.put(url,o);
             }else if(methods[i]== Route.HttpMethod.POST){
                 if(postMethodMap.containsKey(url)){
-                    throw new RuntimeException("post route 重复");
+                    throw new RuntimeException("post route 重复:"+url);
                 }
                 postMethodMap.put(url,m);
                 postObjectMap.put(url,o);
