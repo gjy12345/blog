@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>文章分类</title>
+    <title>回收站</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport"
@@ -17,21 +17,33 @@
 <body>
 <div class="weadmin-body">
     <div class="weadmin-block  layui-form">
-        <button class="layui-btn" onclick="showAdd()"><i class="layui-icon">&#xe654;</i>添加</button>
+<%--        <button class="layui-btn " onclick="addBlog()"><i class="layui-icon">&#xe654;</i>写博客</button>--%>
         <div class=" layui-inline">
-            <label class="layui-form-label" style="width: auto">状态:</label>
+            <label class="layui-form-label" style="width: auto">公开性:</label>
             <div class="layui-input-block">
-                <select id="status">
+                <select id="pub_level">
                     <option value=""></option>
-                    <option value="0">正常</option>
-                    <option value="1">停用</option>
+                    <option value="7">公开</option>
+                    <option value="5">私密</option>
+                    <option value="6">密码</option>
                 </select>
             </div>
         </div>
         <div class="layui-inline">
-            <label class="layui-form-label layui-inline" style="width:auto ">分类名:</label>
+            <label class="layui-form-label" style="width: auto">分类:</label>
             <div class="layui-input-block">
-                <input class="layui-input" placeholder="分类名" name="name" id="name">
+                <select id="type">
+                    <option value=""></option>
+                    <c:forEach items="${categories}" var="category">
+                        <option value="${category.id}">${category.name}</option>
+                    </c:forEach>
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline">
+            <label class="layui-form-label layui-inline" style="width: auto">博客名:</label>
+            <div class="layui-input-block">
+                <input class="layui-input" placeholder="博客名" name="name" id="name">
             </div>
         </div>
         <button class="layui-btn" onclick="initData(1)"><i class="layui-icon">&#xe615;</i>搜索</button>
@@ -41,19 +53,24 @@
     </div>
 
     <div id="demo">
-        <table class="layui-table">
+        <table class="layui-table ">
             <thead>
             <tr>
                 <th>序号</th>
-                <th>分类名</th>
-                <th>分类博客</th>
-                <th>是否启用</th>
-                <th>描述</th>
+                <th>博客名</th>
+                <th>分类</th>
+                <th>关键词</th>
+                <th>开放性</th>
+                <th>访问量</th>
+                <th>点赞数</th>
+                <th>评论数</th>
+                <th>评论开关</th>
                 <th>创建时间</th>
+                <th>最后修改时间</th>
                 <th>操作</th>
             </tr>
             </thead>
-            <tbody id="tbody">
+            <tbody id="tbody"  class="layui-form-item" >
 
             </tbody>
         </table>
@@ -68,8 +85,12 @@
     let laypage;
     let layer;
     let currentPage;
-    layui.use(['layer','form'], function () {
+    let element ;
+    let form;
+    layui.use(['layer','form','element','jquery'], function () {
         layer = layui.layer;
+        element=layui.element;
+        form=layer.form;
     });
     layui.use('laypage', function () {
         laypage = layui.laypage;
@@ -95,34 +116,23 @@
         $("#size").html('共有数据：' + count + ' 条');
     }
 
-    function showAdd() {
-        layer.open({
-            type: 2,
-            area: ['500px', $(window).height() * 0.7 + 'px'],
-            fix: false, //不固定
-            shadeClose: true,
-            shade: 0.4,
-            title: '添加分类',
-            content: '${pageContext.request.contextPath}/user/manage/article/type/add',
-            end: function () {
-                initData(1);
-            }
-        });
-    }
-
     function initData(page) {
         let name=$("#name").val();
-        let status=$("#status").val();
+        let status=$("#pub_level").val();
+        let type=$("#type").val();
         console.log(name)
         console.log(status)
-        let url = '${pageContext.request.contextPath}/user/manage/article/type/list?page=' + page
-        +'&name='+name;
+        let url = '${pageContext.request.contextPath}/user/manage/article/delete/list?page=' + page
+        +'&title='+name;
         if(status!==''&&status.length!==0){
-            url=url+'&lock='+status;
+            url=url+'&publicityLevel='+status;
+        }
+        if(type!==''&&type.length!==0){
+            url=url+'&type='+type;
         }
         $.ajax({
             url: url,
-            type: 'get',
+            type: 'post',
             async: true,
             contentType: 'application/json',
             processData: false, //默认为true，默认情况下，发送的数据将被转换为对象，设为false不希望进行转换
@@ -141,34 +151,49 @@
         let len = data.length;
         let html = '';
         for (let i = 0; i < len; i++) {
-            html = html + '<tr id="line' + (i + 1) + '"><td>' + ((page-1)*10 + i+ 1) + '</td>'
-                + '<td id="name' + (i + 1) + '">' + data[i].name + '</td>'
-                + '<td>' + data[i].blogUseCount + '</td>'
-                + '<td id="state' + (i + 1) + '"><span class="layui-btn  layui-btn-xs ' +
+            html=html+
+                '<tr id="line'+(i+1)+'"><th>'+((page-1)*10 + i+1)+'</th>' +
+                '<td id="name'+(i+1)+'">'+data[i].title+'</td>' +
+                '<td>'+data[i].typeName+'</td>' +
+                '<td>'+data[i].keywords+'</td>' +
+                '<td>'+setPubFiled(data[i].pubLevelName,data[i].password)+'</td>' +
+                '<td>'+data[i].visit+'</td>' +
+                '<td>'+data[i].up+'</td>' +
+                '<td>'+data[i].common+'</td>' +
+                '<td id="state' + (i + 1) + '"><span class="layui-btn  layui-btn-xs ' +
                 (data[i].lock == 1 ? 'layui-btn-danger' : 'layui-btn-normal')
-                + '">' + (data[i].lock == 1 ? '停用' : '启用')
-                + '</span></td>'
-                + '<td>' + data[i].description + '</td>'
-                + '<td>' + data[i].createTime + '</td>'
-                + '<td>' +
-                '<button class="layui-btn layui-btn-sm" onclick="showEdit(' + data[i].id + ')">编辑</button> ' +
-                (data[i].lock == 1 ?
-                    '<button id="lock_change_'+(i+1)+'" onclick="setLockOrUnlock(0,' + (i  + 1) + ',' + data[i].id + ')" class="layui-btn layui-btn-normal layui-btn-sm">启用</button>'
-                    : '<button id="lock_change_'+(i+1)+'" onclick="setLockOrUnlock(1,' + (i + 1) + ',' + data[i].id + ')" class="layui-btn layui-btn-sm layui-btn-warm">禁用</button>') +
+                + '">' + (data[i].lock == 1 ? '关闭' : '开启')
+                + '</span></td>'+
+                '<td>'+data[i].createTime+'</td>' +
+                '<td>'+data[i].updateTime+'</td>' +
+                '<td>'+
+                '<button onclick="recovery(' + data[i].id + ',' + (i + 1) + ')" class="layui-btn layui-btn-sm layui-btn-normal">恢复</button>'+
                 '<button class="layui-btn layui-btn-sm layui-btn-danger"' +
-                ' onclick="deleteCategory(' + data[i].id + ',' + (i + 1) + ')">删除</button>'
+                ' onclick="deleteBlog(' + data[i].id + ',' + (i + 1) + ')">删除</button>'
                 +
                 '</td></tr>';
         }
         tbody.html(html);
+
     }
 
-    function deleteCategory(id, row_index) {
+    function setPubFiled(pub,password){
+        if(pub==='密码'){
+            return pub+'&nbsp;<a href="javascript:void(0);" style="color: lightskyblue" onclick="showPassword(\''+password+'\')">查看密码</ac>';
+        }
+        return pub;
+    }
+
+    function showPassword(p){
+        layer.alert('访问密码:'+p);
+    }
+
+    function deleteBlog(id, row_index) {
         let line = $("#line" + row_index);
         let name = $("#name" + row_index).text();
-        layer.confirm('是否确认删除类型:' + name + "?删除后使用此分类的博客将会成为未分类!", function (index) {
+        layer.confirm('是否确认删除博客:' + name + "?此操作将完全删除此博客，无法恢复!", function (index) {
             $.ajax({
-                url: '${pageContext.request.contextPath}/user/manage/article/type/delete',
+                url: '${pageContext.request.contextPath}/user/manage/article/delete/delete',
                 type: 'post',
                 data: {id: id},
                 success: function (data) {
@@ -188,33 +213,18 @@
         });
     }
 
-    function showEdit(id) {
-        layer.open({
-            type: 2,
-            area: ['500px', $(window).height() * 0.7 + 'px'],
-            fix: false, //不固定
-            shadeClose: true,
-            shade: 0.4,
-            title: '修改分类',
-            content: '${pageContext.request.contextPath}/user/manage/article/type/edit?id=' + id,
-            end: function () {
-                //刷新本页
-                initData(currentPage);
-            }
-        });
-    }
-
-    function setLockOrUnlock(change_state, row_index, id) {
+    function recovery(id,row_index){
+        let line = $("#line" + row_index);
         let name = $("#name" + row_index).text();
-        layer.confirm('是否确认' + (change_state == 0 ? '禁用' : '启用') + '类型:' + name + "?", function (index) {
+        layer.confirm('是否确认恢复博客:' + name + "?!", function (index) {
             $.ajax({
-                url: '${pageContext.request.contextPath}/user/manage/article/type/lockOrUnlock',
+                url: '${pageContext.request.contextPath}/user/manage/article/delete/recovery',
                 type: 'post',
-                data: {id: id, lock: change_state},
+                data: {id: id},
                 success: function (data) {
                     if (data.result === 1) {
-                        layer.msg(change_state === 0 ? '启用成功' : '禁用成功');
-                        initData(currentPage)
+                        layer.msg('恢复成功');
+                        line.remove();
                     } else {
                         layer.msg(data.msg);
                     }

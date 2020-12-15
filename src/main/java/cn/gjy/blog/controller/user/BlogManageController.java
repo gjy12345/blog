@@ -50,12 +50,18 @@ public class BlogManageController {
 
     //选择博客的一些基本参数
     @Route("/choseOptions")
-    public String choseOptions(@BindParam("blogId") String blogId,Model model,
+    public String choseOptions(@BindParam("blogId") Integer blogId,Model model,
                               @BindParam(value = ContentString.USER_SESSION_TAG,from = HttpSession.class)
                                       SysUser sysUser){
         Category category=new Category();
         category.setCreateUser(sysUser.getId());
+        category.setLock(ContentString.UNLOCK);
         model.setAttribute("categories",blogDao.getUserBlogCategories(category,null,null));
+        if(blogId!=null){
+            Article article = blogDao.selectUserBlogById(blogId, sysUser.getId());
+            if(article!=null&&article.getStatus().equals(Article.ArticleState.RELEASE))
+                model.setAttribute("blog",article);
+        }
         return "blog/choseOptions";
     }
 
@@ -114,5 +120,82 @@ public class BlogManageController {
     public CheckResult<Void> lockOrUnlock(@BindParam("id") Integer id,@BindParam(value = ContentString.USER_SESSION_TAG,
     from = HttpSession.class) SysUser user,@BindParam("lock")Integer lock){
         return blogService.lockOrUnlock(id,lock,user);
+    }
+
+    @Route("/article/list")
+    public String toBlogList(Model model,@BindParam(value = ContentString.USER_SESSION_TAG,
+        from = HttpSession.class) SysUser sysUser){
+        Category category=new Category();
+        category.setCreateUser(sysUser.getId());
+        category.setLock(ContentString.UNLOCK);
+        model.setAttribute("categories",blogDao.getUserBlogCategories(category,null,null));
+        return "blog/blog_list";
+    }
+
+    @ResponseBody
+    @Route(value = "/article/list",method = Route.HttpMethod.POST)
+    public TableData<List<DetailedArticle>> getBlogList(@BindParam(value = ContentString.USER_SESSION_TAG,
+            from = HttpSession.class) SysUser sysUser,@BindParam Article article,
+                                                @BindParam("page") Integer page){
+        return blogService.getBlogList(sysUser,article,page,false);
+    }
+
+    @ResponseBody
+    @Route(value = "/article/delete",method = Route.HttpMethod.POST)
+    public CheckResult<Void> deleteArticle(@BindParam("id") Integer id,
+        @BindParam(value = ContentString.USER_SESSION_TAG,from = HttpSession.class) SysUser sysUser){
+        return blogService.deleteBlog(id,sysUser);
+    }
+
+    @Route("/article/delete/list")
+    public String toDeleteBlogList(Model model,@BindParam(value = ContentString.USER_SESSION_TAG,
+            from = HttpSession.class) SysUser sysUser){
+        Category category=new Category();
+        category.setCreateUser(sysUser.getId());
+        category.setLock(ContentString.UNLOCK);
+        model.setAttribute("categories",blogDao.getUserBlogCategories(category,null,null));
+        return "blog/blog_delete_list";
+    }
+
+    @ResponseBody
+    @Route(value = "/article/delete/list",method = Route.HttpMethod.POST)
+    public TableData<List<DetailedArticle>> getDeleteBlogList(@BindParam(value = ContentString.USER_SESSION_TAG,
+            from = HttpSession.class) SysUser sysUser,@BindParam Article article,
+                                                        @BindParam("page") Integer page){
+        return blogService.getBlogList(sysUser,article,page,true);
+    }
+
+    //彻底删除博客
+    @ResponseBody
+    @Route(value = "/article/delete/delete",method = Route.HttpMethod.POST)
+    public CheckResult<Void> removeArticle(@BindParam("id") Integer id,
+                                           @BindParam(value = ContentString.USER_SESSION_TAG,from = HttpSession.class) SysUser sysUser){
+        return blogService.removeBlog(id,sysUser);
+    }
+
+    //恢复博客
+    @ResponseBody
+    @Route(value = "/article/delete/recovery",method = Route.HttpMethod.POST)
+    public CheckResult<Void> recoveryArticle(@BindParam("id") Integer id,
+                                           @BindParam(value = ContentString.USER_SESSION_TAG,from = HttpSession.class) SysUser sysUser){
+        return blogService.recoveryBlog(id,sysUser);
+    }
+
+    @Route("/article/edit")
+    public String editBlog(@BindParam("id") Integer id,
+    @BindParam(value = ContentString.USER_SESSION_TAG,from = HttpSession.class) SysUser sysUser
+    ,Model model){
+        model.setAttribute("blog",blogDao.selectUserBlogById(id,sysUser.getId()));
+        return "blog/editArticle";
+    }
+
+    //修改博客
+    @ResponseBody
+    @Route(value = "/article/edit",method = Route.HttpMethod.POST)
+    public CheckResult<Integer> editBlog(@JsonRequestBody Article article,
+                                               @BindParam(value = ContentString.USER_SESSION_TAG,
+                                                       from = HttpSession.class) SysUser user
+            , HttpServletRequest request){
+        return blogService.editBlog(article,user,request.getRemoteAddr());
     }
 }

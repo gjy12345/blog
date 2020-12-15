@@ -27,6 +27,7 @@ To change this template use File | Settings | File Templates.
     <script src="${pageContext.request.contextPath}/static/blog/bootstrap.min.js"></script>
     <script src="${pageContext.request.contextPath}/static/blog/pace.min.js"></script>
     <script src="${pageContext.request.contextPath}/static/blog/modernizr.custom.js"></script>
+
 </head>
 
 <body>
@@ -35,7 +36,7 @@ To change this template use File | Settings | File Templates.
         <div class="row">
             <div class="col-md-4 col-sm-5 col-xs-8">
                 <div class="logo">
-                    <h1><a href="index.html"><b>${blogConfig.blogName}</b></a></h1>
+                    <h1><a href="${pageContext.request.contextPath}/"><b>${blogConfig.blogName}</b></a></h1>
                 </div>
             </div><!-- col-md-4 -->
             <div class="col-md-8 col-sm-7 col-xs-4">

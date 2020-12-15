@@ -1,10 +1,12 @@
 package cn.gjy.blog.dao;
 
+import cn.gjy.blog.dao.method.BlogMethodSql;
 import cn.gjy.blog.dao.method.CategoryMethodSql;
 import cn.gjy.blog.framework.Invocation.DaoInvocationHandlerImpl;
 import cn.gjy.blog.framework.annotation.*;
 import cn.gjy.blog.model.Article;
 import cn.gjy.blog.model.Category;
+import cn.gjy.blog.model.DetailedArticle;
 
 import java.util.List;
 
@@ -18,10 +20,10 @@ public interface BlogDao {
 
     @Insert("INSERT INTO `blog`.`article` (  `create_time`,  `update_time`,  `comment`,  `content`,  " +
             "`description`,  `keywords`,  `password`,  `status`,  `thumb`,  `title`,  `top_priority`,  `url`, " +
-            " `type`,  `publicity_level`,  `user_id`,time_stamp   )  " +
+            " `type`,  `publicity_level`,  `user_id`,time_stamp,markdown   )  " +
             "VALUES  (  #{create_time},  #{update_time},  #{comment},  #{content},  " +
             "#{description},  #{keywords},  #{password},  #{status},  #{thumb},  #{title},  #{top_priority}, " +
-            " #{url},  #{type},  #{publicity_level},  #{user_id} ,#{time_stamp}  );")
+            " #{url},  #{type},  #{publicity_level},  #{user_id} ,#{time_stamp},#{markdown}  );")
     int releaseNewBlog(Article article);
 
     @UseCustomMethod(value = CategoryMethodSql.CategoryCountMethod.class,
@@ -63,4 +65,60 @@ public interface BlogDao {
 
     @Update("update category set category.lock=#{lock} where id=#{id};")
     int updateCategoryLock(@BindParam("id") Integer id,@BindParam("lock") Integer lock);
+
+    @UseCustomMethod(value = BlogMethodSql.BlogCountMethod.class,
+            sqlType = DaoInvocationHandlerImpl.SqlType.SELECT)
+    int selectUserBlogsCount(Article article,Boolean isDelete);
+
+    @UseCustomMethod(value = BlogMethodSql.BlogDataMethod.class,
+            sqlType = DaoInvocationHandlerImpl.SqlType.SELECT)
+    List<DetailedArticle> selectUserBlogsByArgs(Article article,Integer page,Integer size,Boolean isDelete);
+
+    @Select("select * from article where id=#{id} and user_id=#{userId} and status<>4")
+    Article selectUserBlogById(@BindParam("id") Integer id, @BindParam("userId") Integer userId);
+
+    @Update("update article set status=4 where id=#{id}")
+    int deleteBlog(@BindParam("id") Integer id);
+
+    @Select("select * from article where id=#{id} and user_id=#{userId} and status=4")
+    Article selectUserDeleteBlogById(@BindParam("id") Integer id,@BindParam("userId") Integer userId);
+
+    @Delete("delete from article where id=#{id}")
+    int removeBlog(@BindParam("id") Integer id);
+
+    //不能恢复被锁定的博客
+    @Update("update article set status =1 where id=#{id} and status=4")
+    int recoveryBlog(@BindParam("id") Integer id);
+
+    @Select("SELECT article.*,category.`name` as typeName,sys_user.nickname as userName,sys_user.face from article " +
+            "left join category " +
+            "on category.id=article.type "+
+            "left join sys_user " +
+            "on sys_user.id=article.user_id " +
+            "where article.url=#{url}")
+    DetailedArticle selectArticleByUrl(@BindParam("url") String url);
+
+    @Update("UPDATE `blog`.`article` \n" +
+            "SET " +
+            "`update_time` = #{update_time},\n" +
+            "`comment` = #{comment},\n" +
+            "`content` = #{content},\n" +
+            "`description` = #{description},\n" +
+            "`keywords` = #{keywords},\n" +
+            "`password` = #{password},\n" +
+            "`thumb` = #{thumb},\n" +
+            "`title` = #{title},\n" +
+            "`type` = #{type},\n" +
+            "`publicity_level` = #{publicity_level},\n" +
+            "`markdown` = #{markdown} \n" +
+            "WHERE\n" +
+            "\t`id` = #{id};")
+    int editBlog(Article article);
+
+    @Select("select * from article where status=1 and publicity_level=6 or publicity_level=7 " +
+            "and user_id=#{userId} order by id desc limit #{s},#{e}")
+    List<Article> selectUserPubOrPwdBlog(@BindParam("userId") Integer userId, @BindParam("s") int s,@BindParam("e") int e);
+
+    @Select("select * from article where id=#{id} and status<>4")
+    Article selectBlogById(@BindParam("id") Integer id);
 }

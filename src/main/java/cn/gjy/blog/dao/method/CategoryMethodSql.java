@@ -18,9 +18,11 @@ public class CategoryMethodSql {
         @Override
         public SqlAndArgs handle(Object... data) {
             Category category= (Category) data[0];
-            StringBuilder sql=new StringBuilder("select count(*) from category where 1=1 ");
+            StringBuilder sql=new StringBuilder("select count(*) from category where ");
             Object[] args=new Object[10];
             int index=0;
+            sql.append(" create_user=? ");
+            args[index++]=category.getCreateUser();
             if(!StringUtils.isEmptyString(category.getName())){
                 sql.append("and name like concat('%',?,'%') ");
                 args[index++]=category.getName();
@@ -44,9 +46,11 @@ public class CategoryMethodSql {
             }
             Integer page= (Integer) data[1];
             Integer size= (Integer) data[2];
-            StringBuilder sql=new StringBuilder("select * from category where 1=1 ");
+            StringBuilder sql=new StringBuilder("select * from category where ");
             Object[] args=new Object[10];
             int index=0;
+            sql.append(" create_user=? ");
+            args[index++]=category.getCreateUser();
             if(!StringUtils.isEmptyString(category.getName())){
                 sql.append("and name like concat('%',?,'%') ");
                 args[index++]=category.getName();

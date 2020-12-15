@@ -2,6 +2,7 @@ package cn.gjy.blog.service;
 
 
 import cn.gjy.blog.model.Article;
+import cn.gjy.blog.model.DetailedArticle;
 
 import java.util.List;
 
@@ -14,5 +15,5 @@ import java.util.List;
 public interface ArticleService {
 
 
-    List<Article> selectRecentBlogs();
+    List<DetailedArticle> selectRecentBlogs();
 }

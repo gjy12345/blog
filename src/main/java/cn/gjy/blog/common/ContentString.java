@@ -18,4 +18,5 @@ public class ContentString {
 
     public static final String BASE_JSP="base";
     public static final String CLIENT_WEB = "web";
+    public static final Integer UNLOCK = 0;
 }

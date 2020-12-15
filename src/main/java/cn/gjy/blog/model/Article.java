@@ -9,30 +9,39 @@ import cn.gjy.blog.framework.annotation.Alias;
  * 文章表
  */
 public class Article {
-    private Integer id;//唯一编号
+    protected Integer id;//唯一编号
     @Alias("create_time")
-    private String createTime;//创建时间
+    protected String createTime;//创建时间
     @Alias("update_time")
-    private String updateTime;//更新时间
+    protected String updateTime;//更新时间
     @Alias("comment")
-    private Integer comment;//是否可以评论
-    private String description;//描述 展示在未点进去的时候
-    private String keywords;//关键字
-    private String password;//文章密码
-    private Integer status;//状态
-    private String thumb;//封面
-    private String title;//标题
+    protected Integer comment;//是否可以评论
+    protected String description;//描述 展示在未点进去的时候
+    protected String keywords;//关键字
+    protected String password;//文章密码
+    protected Integer status;//状态
+    protected String thumb;//封面
+    protected String title;//标题
     @Alias("top_priority")
-    private Integer topPriority;//权重
-    private String url;//url编号
-    private Integer type;//分类id
-    private String content;//正文
+    protected Integer topPriority;//权重
+    protected String url;//url编号
+    protected Integer type;//分类id
+    protected String content;//正文
     @Alias("publicity_level")
-    private Integer publicityLevel;//公开级别
+    protected Integer publicityLevel;//公开级别
     @Alias("user_id")
-    private Integer userId;
+    protected Integer userId;
     @Alias("time_stamp")
-    private Long timeStamp;
+    protected Long timeStamp;
+    protected String markdown;
+
+    public String getMarkdown() {
+        return markdown;
+    }
+
+    public void setMarkdown(String markdown) {
+        this.markdown = markdown;
+    }
 
     public Long getTimeStamp() {
         return timeStamp;
@@ -172,7 +181,6 @@ public class Article {
 
     public static final class ArticleState{
         public static final int RELEASE=1;
-        public static final int CG=2;//草稿
         public static final int LOCK=3;//锁定
         public static final int DELETE=4;//删除
     }

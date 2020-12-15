@@ -20,22 +20,22 @@
 
     <div class="col-md-12 " style="margin-top: 40px">
         <form class="form-horizontal col-md-12" role="form">
-            <input type="text" id="uploadImage" hidden="hidden">
+            <input type="text" id="uploadImage" hidden="hidden" value="${blog.thumb}">
             <div class="form-group">
                 <label for="pub_level" class="col-sm-2 control-label">谁可以看:</label>
                 <div class="col-sm-8">
 <%--                    <input type="email" class="form-control" id="inputEmail3" placeholder="">--%>
                     <select id="pub_level" class="form-control" onchange="change_pub_level()">
-                        <option value="7">所有人</option>
-                        <option value="5">只有我</option>
-                        <option value="6">需要密码</option>
+                        <option value="7" ${blog.publicityLevel==7?'selected':''}>所有人</option>
+                        <option value="5" ${blog.publicityLevel==5?'selected':''}>只有我</option>
+                        <option value="6" ${blog.publicityLevel==6?'selected':''}>需要密码</option>
                     </select>
                 </div>
             </div>
             <div class="form-group" id="visit_password" hidden="hidden">
                 <label for="password" class="col-sm-2 control-label">密码:</label>
                 <div class="col-sm-8">
-                    <input type="password" class="form-control" id="password" placeholder="请输入博客访问密码">
+                    <input type="password" class="form-control" value="${blog.password}" id="password" placeholder="请输入博客访问密码">
                 </div>
             </div>
             <div class="form-group">
@@ -43,8 +43,8 @@
                 <div class="col-sm-8">
                     <%--                    <input type="email" class="form-control" id="inputEmail3" placeholder="">--%>
                     <select id="comment" class="form-control">
-                        <option value="1">允许</option>
-                        <option value="0">不允许</option>
+                        <option value="1" ${blog.comment==1?'selected':''}>允许</option>
+                        <option value="0" ${blog.comment==0?'selected':''}>不允许</option>
                     </select>
                 </div>
             </div>
@@ -53,14 +53,19 @@
                 <div class="col-sm-8">
                     <textarea id="ms" type="text" maxlength="200"
                               rows="8"
-                              class="form-control"  placeholder="将和标题一起展示"></textarea>
+                              class="form-control"  placeholder="将和标题一起展示">${blog.description}</textarea>
                 </div>
             </div>
             <div class="form-group">
                 <label for="image_file" class="col-sm-2 control-label">博客封面(最大10m):</label>
                 <div class="col-sm-8">
                     <div class="form-control" style="height: 315px;text-align: center">
-                        <img id="show_image"  style="height: 300px;width: auto" src="${pageContext.request.contextPath}/static/img/placeholder.jpg" alt="">
+                        <c:if test="${blog.thumb!=null}">
+                            <img id="show_image"  style="height: 300px;width: auto" src="${blog.thumb}" alt="">
+                        </c:if>
+                        <c:if test="${blog.thumb==null}">
+                            <img id="show_image"  style="height: 300px;width: auto" src="${pageContext.request.contextPath}/static/img/placeholder.jpg" alt="">
+                        </c:if>
                     </div>
                     <input class="form-control" type="file" id="image_file" onchange="onImageChange()" >
                 </div>
@@ -68,7 +73,7 @@
             <div class="form-group">
                 <label for="key_word" class="col-sm-2 control-label">博客关键字:</label>
                 <div class="col-sm-8">
-                    <input type="text" id="key_word" class="form-control" placeholder="让文章更容易被搜索到">
+                    <input type="text" id="key_word" class="form-control" value="${blog.keywords}" placeholder="让文章更容易被搜索到">
                 </div>
             </div>
             <div class="form-group">
@@ -77,9 +82,8 @@
                     <select id="a_type" class="form-control">
                         <option value=""></option>
                         <c:forEach items="${categories}" var="category">
-                            <option value="${category.id}">${category.name}</option>
+                            <option value="${category.id}" ${blog.type==category.id?'selected':''}>${category.name}</option>
                         </c:forEach>
-                        categories
                     </select>
                 </div>
             </div>
@@ -133,6 +137,8 @@
                 $("#visit_password").hide();
             }
         }
+
+        change_pub_level();
     </script>
 </body>
 </html>

@@ -95,4 +95,17 @@ public class CommonController {
 //                :"";
 //    }
 
+    @Route("/layui/upload")
+    public void layuiUploadImage(HttpServletRequest request,
+                                 @BindParam(value = ContentString.USER_SESSION_TAG,from = HttpSession.class) SysUser user){
+        if(user==null){
+
+        }
+        CheckResult<File> checkResult;
+        try {
+            checkResult = FileUtils.uploadSingleImage(request, FrameworkConfig.baseSaveFileDir);
+        }catch (Exception e){
+            
+        }
+    }
 }
