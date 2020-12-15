@@ -44,7 +44,7 @@ public class FileDataHandle implements DataHandle {
         OutputStream outputStream = response.getOutputStream();
         try(FileInputStream fileInputStream=new FileInputStream(file)) {
             byte[] arr;
-            log.v(fileInputStream.available()+"");
+//            log.v(fileInputStream.available()+"");
             if(fileInputStream.available()<=MAX_READ_SIZE){
                 arr=new byte[fileInputStream.available()];
                 fileInputStream.read(arr,0, arr.length);

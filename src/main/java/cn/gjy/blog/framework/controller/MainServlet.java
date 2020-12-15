@@ -69,6 +69,7 @@ public class MainServlet extends HttpServlet {
         log.v("INTI start");
         super.init();
         this.contextPathLength=this.getServletContext().getContextPath().length();
+        FrameworkConfig.contentPath=getServletContext().getContextPath();
         ClassTool.setServletContext(getServletContext());
         try {
             this.objectFactory=new ObjectFactory();
@@ -140,7 +141,6 @@ public class MainServlet extends HttpServlet {
             e.printStackTrace();
             log.e("创建装配工厂失败:"+e.getMessage());
         }
-        FrameworkConfig.contentPath=getServletContext().getContextPath();
     }
 
 
