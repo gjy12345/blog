@@ -7,6 +7,7 @@ import cn.gjy.blog.framework.config.FrameworkConfig;
 import cn.gjy.blog.framework.log.SimpleLog;
 import cn.gjy.blog.framework.model.Model;
 import cn.gjy.blog.framework.model.ModelAndView;
+import cn.gjy.blog.framework.tool.ClassTool;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -137,7 +138,7 @@ public class MethodParamBind {
             throw new RuntimeException("绑定对象仅限于  :"+ FrameworkConfig.basePackage+".*");
         }
         T t=tClass.newInstance();
-        Field[] declaredFields = tClass.getDeclaredFields();
+        Field[] declaredFields = ClassTool.getClassAllFields(tClass);
         Map<String,Object> paramsMap=paramsToMap(request,HashMap.class);
         Object ob;
         for (int i = 0; i < declaredFields.length; i++) {
