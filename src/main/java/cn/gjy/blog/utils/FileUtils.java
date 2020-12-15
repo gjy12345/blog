@@ -58,4 +58,17 @@ public class FileUtils {
         items.get(fileIndex).write(saveFile);
         return CheckResult.createSuccessResult(saveFile,"成功");
     }
+
+    private static final String[] imageFileEnd={".jpg", ".jpeg", ".gif", ".png"};
+
+    public static boolean isImageFile(String thumb) {
+        if (thumb==null)
+            return false;
+        for (String s : imageFileEnd) {
+            if(thumb.toLowerCase().endsWith(s)){
+                return true;
+            }
+        }
+        return false;
+    }
 }
