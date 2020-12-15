@@ -2,6 +2,7 @@ package cn.gjy.blog.framework.tool;
 
 import javax.servlet.ServletContext;
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -79,6 +80,20 @@ public class ClassTool {
                 }
             }
         }
+    }
+
+    //获取该类所有字段包括父类
+    public static Field[] getClassAllFields(Class<?> c){
+        List<Field> fields = new ArrayList<>(Arrays.asList(c.getDeclaredFields()));
+        while (c.getSuperclass()!=null){
+            c=c.getSuperclass();
+            fields.addAll(Arrays.asList(c.getDeclaredFields()));
+        }
+        Field[] fs=new Field[fields.size()];
+        for (int i = 0; i < fs.length; i++) {
+            fs[i]=fields.get(i);
+        }
+        return fs;
     }
 
     public static void main(String[] args) throws Exception {
