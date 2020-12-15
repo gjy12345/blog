@@ -170,7 +170,7 @@ To change this template use File | Settings | File Templates.
 								<c:forEach items="${recentBlogs}" var="blog" varStatus="s">
 									<div class="entry-content clearfix table-bordered" style="padding-bottom: 10px;padding-top: 10px;">
 										<div class="entry-title col-md-10 font16" >
-											<a href="single.html">
+											<a href="${pageContext.request.contextPath}/article/detail?url=${blog.url}" target="_blank">
 													<c:choose>
 														<c:when test="${blog.publicityLevel==7}">
 															[全部可见]

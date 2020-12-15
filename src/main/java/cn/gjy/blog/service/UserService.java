@@ -24,4 +24,6 @@ public interface UserService {
     Integer getUserBlogCount(SysUser user);
 
     List<Article> getUserRecentBlogs(SysUser user);
+
+    CheckResult<Void> editUserInfo(SysUser user, SysUser uploadUser);
 }

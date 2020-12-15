@@ -21,7 +21,11 @@ To change this template use File | Settings | File Templates.
 		<link rel="stylesheet" href="${pageContext.request.contextPath}/static/weadmin/static/css/font.css">
 		<link rel="stylesheet" href="${pageContext.request.contextPath}/static/weadmin/static/css/weadmin.css">
 		<script type="text/javascript" src="${pageContext.request.contextPath}/static/weadmin/lib/layui/layui.js" charset="utf-8"></script>
-
+		<style type="text/css">
+			.first-tab i.layui-tab-close{
+				display:none!important;
+			}
+		</style>
 	</head>
 
 	<body>
@@ -69,7 +73,7 @@ To change this template use File | Settings | File Templates.
 		<div class="page-content">
 			<div class="layui-tab tab" lay-filter="wenav_tab" id="WeTabTip" lay-allowclose="true">
 				<ul class="layui-tab-title" id="tabName">
-					<li>我</li>
+					<li class=" first-tab">我</li>
 				</ul>
 				<div class="layui-tab-content">
 					<div class="layui-tab-item layui-show">

@@ -107,4 +107,16 @@ public class UserController {
         return "redirect:"+FrameworkConfig.contentPath+ "/user/";
     }
 
+    @Route("/editSelf")
+    public String editUserInfo(){
+        return "user/edit_user_info";
+    }
+
+    @ResponseBody
+    @Route(value = "/editSelf",method = Route.HttpMethod.POST)
+    public CheckResult<Void> editUserInfo(@BindParam(value = ContentString.USER_SESSION_TAG,
+        from = HttpSession.class) SysUser user,@JsonRequestBody SysUser uploadUser){
+        return userService.editUserInfo(user,uploadUser);
+    }
+
 }

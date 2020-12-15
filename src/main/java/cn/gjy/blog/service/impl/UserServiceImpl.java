@@ -1,16 +1,18 @@
 package cn.gjy.blog.service.impl;
 
 import cn.gjy.blog.dao.BlogDao;
+import cn.gjy.blog.dao.CommonDao;
 import cn.gjy.blog.dao.UserDao;
 import cn.gjy.blog.framework.annotation.InitObject;
 import cn.gjy.blog.framework.annotation.Service;
 import cn.gjy.blog.framework.config.FrameworkConfig;
-import cn.gjy.blog.model.Article;
-import cn.gjy.blog.model.CheckResult;
-import cn.gjy.blog.model.MenuModel;
-import cn.gjy.blog.model.SysUser;
+import cn.gjy.blog.framework.controller.HttpRequestUtil;
+import cn.gjy.blog.framework.tool.XssTool;
+import cn.gjy.blog.model.*;
 import cn.gjy.blog.service.UserService;
 import cn.gjy.blog.utils.Md5Utils;
+import cn.gjy.blog.utils.StringUtils;
+import cn.gjy.blog.utils.TimeUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,6 +32,9 @@ public class UserServiceImpl implements UserService{
 
     @InitObject
     private BlogDao blogDao;
+
+    @InitObject
+    private CommonDao commonDao;
 
     @Override
     public MenuModel getUserMenuData() {
@@ -64,6 +69,9 @@ public class UserServiceImpl implements UserService{
         if(!Md5Utils.md5(sysUser.getPassword()).equals(dbUser.getPassword())){
             return CheckResult.createFailResult("密码错误!");
         }
+        userDao.updateUserLastLogin(HttpRequestUtil.getRemoteIp(),
+                TimeUtils.getSimpleDateFormat().format(System.currentTimeMillis()),
+                dbUser.getId());
         return CheckResult.createSuccessResult(dbUser,"登录成功");
     }
 
@@ -80,6 +88,38 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<Article> getUserRecentBlogs(SysUser user) {
         return blogDao.selectUserBlogs(user.getId(),0,10);
+    }
+
+    @Override
+    public CheckResult<Void> editUserInfo(SysUser user, SysUser uploadUser) {
+        if(StringUtils.isEmptyString(uploadUser.getNickname())){
+            return CheckResult.createFailResult("昵称为空!");
+        }
+        if(StringUtils.isEmptyString(uploadUser.getPassword())){
+            return CheckResult.createFailResult("密码为空");
+        }
+        if(StringUtils.isEmptyString(uploadUser.getFace())){
+            uploadUser.setFace(null);
+        }else
+            uploadUser.setFace(XssTool.encode(uploadUser.getFace().trim()));
+        if(uploadUser.getSign()!=null&&uploadUser.getSign().trim().length()>50){
+            return CheckResult.createFailResult("签名过长!");
+        }
+        if(uploadUser.getSign()!=null)
+            uploadUser.setSign(XssTool.encode(uploadUser.getSign().trim()));
+        uploadUser.setId(user.getId());
+        uploadUser.setPassword(Md5Utils.md5(uploadUser.getPassword()));
+        if(userDao.updateUserInfo(uploadUser)>0){
+            commonDao.insertLog(user.getId(), SysOperation.OperationType.UPDATE_USER_INFO,
+                    "修改个人信息",
+                    TimeUtils.getSimpleDateFormat().format(System.currentTimeMillis()),
+                    HttpRequestUtil.getRequest().getRemoteAddr(), "web");
+            user.setSign(uploadUser.getSign());
+            user.setFace(uploadUser.getFace());
+            user.setNickname(uploadUser.getNickname());
+            return CheckResult.createSuccessResult(null,"更新成功");
+        }
+        return CheckResult.createFailResult("更新失败");
     }
 
 }

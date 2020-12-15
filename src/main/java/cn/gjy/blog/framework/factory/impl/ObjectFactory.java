@@ -8,6 +8,7 @@ import cn.gjy.blog.framework.tool.ClassTool;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author gujianyang
@@ -20,8 +21,13 @@ public class ObjectFactory {
     private List<Object> controllerList;
     private static final SimpleLog log=SimpleLog.log(ObjectFactory.class);
     private Map<Class<?>,Object> realObjectMap;//存放被代理对象真实的object
+    private static ObjectFactory instance=null;
 
     public ObjectFactory() throws Exception {
+        if(instance!=null){
+            throw new RuntimeException("ObjectFactory已被创建");
+        }
+        instance=this;
         initMap();
         this.classes= ClassTool.loadProjectAllClasses();
     }
@@ -36,7 +42,7 @@ public class ObjectFactory {
     }
 
     private void initMap(){
-        objectMap=new HashMap<Class<?>, Object>(){
+        objectMap=new ConcurrentHashMap<Class<?>, Object>(){
             @Override
             public Object put(Class<?> key, Object value) {
                 if(this.containsKey(key)){
@@ -50,13 +56,14 @@ public class ObjectFactory {
         return objectMap;
     }
 
-    public void init() throws IllegalAccessException {
+    public void init() {
         objectMap.put(this.getClass(),this);
         realObjectMap=new HashMap<>();
         List<Class<?>> services=new ArrayList<>();
         List<Class<?>> dao=new ArrayList<>();
         List<Class<?>> componentList=new ArrayList<>();
-        classes.parallelStream().filter(aClass -> aClass.getAnnotation(Service.class)!=null||
+        //ArrayList线程不安全 使用串行流
+        classes.stream().filter(aClass -> aClass.getAnnotation(Service.class)!=null||
                 aClass.getAnnotation(Dao.class)!=null||aClass.getAnnotation(Component.class)!=null).forEach(aClass -> {
                     if(aClass.getAnnotation(Dao.class)!=null){
                         dao.add(aClass);
@@ -134,7 +141,7 @@ public class ObjectFactory {
 
     private void initDao(List<Class<?>> dao) {
         dao.stream().forEach(aClass -> {
-            Object o= null;
+            Object o;
             try {
                 o = new DaoInvocationHandlerImpl<>(aClass).getProxy();
             } catch (Exception e) {

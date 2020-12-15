@@ -22,7 +22,7 @@
     <label class="control-label" style="margin-bottom: 10px;margin-top: 10px">
         <i style="color: red">*&nbsp;</i>博客标题:
     </label>
-    <input type="text" id="title" class="form-control" placeholder="请输入标题" required>
+    <input type="text" id="title" class="form-control" value="${blog.title}" placeholder="请输入标题" required>
     <label class="control-label" style="margin-bottom: 10px;margin-top: 10px">
         <i style="color: red">*&nbsp;</i>
         博客内容:
@@ -30,7 +30,7 @@
 </div>
 <div id="editor" style="margin: 0 auto;background: grey;">
     <!-- Tips: Editor.md can auto append a `<textarea>` tag -->
-    <textarea id="#md" style="display:none;height: 100%;" class="col-md-12"></textarea>
+    <textarea id="#md" style="display:none;height: 100%;" class="col-md-12">${blog.markdown}</textarea>
 </div>
 <div id="view">
 
@@ -38,7 +38,7 @@
 <div id="buttons_box" style="width: 98%;margin: 0 auto;text-align: right;padding-top: 10px">
 
 <%--    <button type="button" id="save_cg" class="btn btn-warning">保存草稿</button>--%>
-    <button type="button" id="release_blog" class="btn btn-primary">发布博客</button>
+    <button type="button" id="release_blog" class="btn btn-primary">修改博客</button>
 
 </div>
 <script src="${pageContext.request.contextPath}/static/editormd/js/jquery.min.js"></script>
@@ -46,6 +46,7 @@
 <script type="text/javascript">
     var editor;
     var layer;
+    let blogId=${blog.id};
     layui.use('layer', function(){
         layer = layui.layer;
     });
@@ -63,7 +64,7 @@
                 imageUploadURL: '${pageContext.request.contextPath}/common/upload',
                 htmlDecode: false,
                 placeholder: '开始创作吧..',
-                // markdown: "xxxx",     // dynamic set Markdown text
+                <%--markdown: "${blog.markdown}",     // dynamic set Markdown text--%>
                 path: "${pageContext.request.contextPath}/static/editormd/lib/"  // Autoload modules mode, codemirror, marked... dependents libs path
             });
         });
@@ -86,7 +87,7 @@
             return ;
         }
         //发布博客
-        $.get('${pageContext.request.contextPath}/user/manage/choseOptions', {}, function(str){
+        $.get('${pageContext.request.contextPath}/user/manage/choseOptions?blogId='+blogId, {}, function(str){
             layer.open({
                 type: 1,
                 content: str ,//注意，如果str是object，那么需要字符拼接。
@@ -102,6 +103,7 @@
                     json['thumb']=layero.contents().find("#uploadImage").val();
                     json['keywords']=layero.contents().find("#key_word").val();
                     json['markdown']=editor.getMarkdown();
+                    json['id']=blogId;
                     let type=layero.contents().find("#a_type").val();
                     if(type.length>0){
                         json['type']=type;
@@ -110,7 +112,7 @@
                     json['content']=blog;
                     setTimeout( () => {
                         $.ajax({
-                            url: "${pageContext.request.contextPath}/user/manage/article/new",
+                            url: "${pageContext.request.contextPath}/user/manage/article/edit",
                             type: "post",
                             contentType: "application/json;charset=utf-8",
                             data: JSON.stringify(json),
@@ -134,6 +136,8 @@
                         });
                     },50)
                     layer.close(index);
+                    let n = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    parent.layer.close(n); //再执行关闭
                 }
             });
         });

@@ -3,6 +3,7 @@ package cn.gjy.blog.dao;
 import cn.gjy.blog.framework.annotation.BindParam;
 import cn.gjy.blog.framework.annotation.Dao;
 import cn.gjy.blog.framework.annotation.Select;
+import cn.gjy.blog.framework.annotation.Update;
 import cn.gjy.blog.model.Article;
 import cn.gjy.blog.model.MenuModel;
 import cn.gjy.blog.model.SysUser;
@@ -27,4 +28,11 @@ public interface UserDao {
             "and status<>4 and status<>2")
     Integer selectUserBlogCountById(@BindParam("id") Integer id);
 
+    @Update("update sys_user set last_login_ip=#{ip}," +
+            "last_login_time=#{time} where id=#{id};")
+    int updateUserLastLogin(@BindParam("ip") String remoteIp, @BindParam("time") String time,@BindParam("id") Integer id);
+
+    @Update("update sys_user set nickname=#{nickname}," +
+            "sign=#{sign},password=#{password},face=#{face} where id=#{id}")
+    int updateUserInfo(SysUser uploadUser);
 }

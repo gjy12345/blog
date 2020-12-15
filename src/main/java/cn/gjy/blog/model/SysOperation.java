@@ -85,5 +85,7 @@ public class SysOperation {
         public static final int FOLLOW=6;//关注用户
         public static final int LOOK_BLOG=7;//浏览博客
         public static final int ADD_NEW_CATEGORY=8;
+        public static final int UPDATE_USER_INFO = 9;
+        public static final int UPDATE_BLOG = 10;
     }
 }
