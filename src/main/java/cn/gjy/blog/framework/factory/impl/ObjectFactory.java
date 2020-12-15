@@ -13,6 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author gujianyang
  * @date 2020/11/27
+ * 初始化bean
  */
 public class ObjectFactory {
 
