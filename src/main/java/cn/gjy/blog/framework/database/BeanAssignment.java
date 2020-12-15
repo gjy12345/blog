@@ -4,6 +4,8 @@ import cn.gjy.blog.framework.annotation.Alias;
 import cn.gjy.blog.framework.annotation.UseHump;
 import cn.gjy.blog.framework.config.FrameworkConfig;
 import cn.gjy.blog.framework.log.SimpleLog;
+import cn.gjy.blog.framework.tool.ClassTool;
+import cn.gjy.blog.model.DetailedArticle;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -194,7 +196,7 @@ public class BeanAssignment {
         }
         BeanFieldsInfo info=new BeanFieldsInfo();
         info.fieldMap=new HashMap<>();
-        Field[] fields = c.getDeclaredFields();
+        Field[] fields = ClassTool.getClassAllFields(c);
         info.classes=new Class[fields.length];
         Alias alias;
         UseHump useHump;
