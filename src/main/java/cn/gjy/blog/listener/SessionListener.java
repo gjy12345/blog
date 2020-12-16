@@ -36,8 +36,8 @@ public class SessionListener implements HttpSessionListener, HttpSessionAttribut
         if(o!=null){
             SysUser sysUser= (SysUser) o;
             log.v("失效用户登录状态:"+sysUser.getId()+" "+sysUser.getUsername());
-            log.v("当前用户数量:"+userSessionMap.size());
             userSessionMap.remove(sysUser.getId());
+            log.v("当前用户数量:"+userSessionMap.size());
         }
     }
 
