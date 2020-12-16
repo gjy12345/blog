@@ -62,7 +62,8 @@ public class CommentInterceptor implements Interceptor{
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Method method, Object methodObject) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Method method, Object[] methodObject, Object returnData) throws Exception {
 
     }
+
 }

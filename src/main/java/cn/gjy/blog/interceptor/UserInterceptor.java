@@ -46,6 +46,7 @@ public class UserInterceptor implements Interceptor {
         //测试用
         //添加重定向地址到session
         SysUser sysUser=userService.getTestUser();
+        System.out.println(sysUser);
         request.getSession().setAttribute(ContentString.USER_SESSION_TAG,sysUser);
         return true;
 //        response.sendRedirect(request.getContextPath()+"/user/");
@@ -53,7 +54,8 @@ public class UserInterceptor implements Interceptor {
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Method method, Object methodObject) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Method method, Object[] methodObject, Object returnData) throws Exception {
 
     }
+
 }

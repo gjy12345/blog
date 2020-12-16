@@ -265,7 +265,8 @@ public class MainServlet extends HttpServlet {
                     //处理编码
                     charsetConfig.handle(req,resp);
                 }
-                if(!interceptorUrl(url,req,resp, result.getMethod(), result.getO())){
+                List<Interceptor> handles = interceptorFactory.getHandles(url);
+                if(!interceptorUrl(handles,req,resp, result.getMethod(), result.getO())){
                     return;
                 }
                 if(FrameworkConfig.xssFilter){
@@ -277,6 +278,7 @@ public class MainServlet extends HttpServlet {
                 log.v(url+" "+method);
                 crossDomain(result,resp);
                 Object returnData=result.getMethod().invoke(result.getO(),objects);
+                afterInterceptor(handles,req,resp,result,objects,returnData);
                 Class<?> returnType = result.getMethod().getReturnType();
                 if(returnType==Void.class||returnType==void.class){
                     //nothing
@@ -309,6 +311,13 @@ public class MainServlet extends HttpServlet {
         }
     }
 
+    private void afterInterceptor(List<Interceptor> handles, HttpServletRequest req, HttpServletResponse resp,
+                                  MatchResult result,Object[] objects,Object returnData) throws Exception {
+        for (Interceptor handle : handles) {
+            handle.afterCompletion(req,resp,result.getMethod(),objects,returnData);
+        }
+    }
+
     private Map<Method,Boolean> needCrossHeader=new ConcurrentHashMap<>();
 
     private void crossDomain(MatchResult result, HttpServletResponse resp) {
@@ -324,11 +333,8 @@ public class MainServlet extends HttpServlet {
     }
 
     //拦截器处理
-    private boolean interceptorUrl(String url,HttpServletRequest request,HttpServletResponse response,Method method,
+    private boolean interceptorUrl(List<Interceptor> handles,HttpServletRequest request,HttpServletResponse response,Method method,
                                    Object methodObject) throws Exception {
-        if(interceptorFactory==null)
-            return true;
-        List<Interceptor> handles = interceptorFactory.getHandles(url);
         for (Interceptor handle : handles) {
             if(!handle.preHandle(request,response,method,methodObject))
                 return false;

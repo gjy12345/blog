@@ -34,6 +34,15 @@ public class Article {
     @Alias("time_stamp")
     protected Long timeStamp;
     protected String markdown;
+    private int visit;//访问量
+
+    public int getVisit() {
+        return visit;
+    }
+
+    public void setVisit(int visit) {
+        this.visit = visit;
+    }
 
     public String getMarkdown() {
         return markdown;

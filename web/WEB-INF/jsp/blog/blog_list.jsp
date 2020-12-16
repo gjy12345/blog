@@ -57,7 +57,7 @@
             <thead>
             <tr>
                 <th>序号</th>
-                <th>博客名</th>
+                <th>文章名</th>
                 <th>分类</th>
                 <th>关键词</th>
                 <th>开放性</th>

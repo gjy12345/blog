@@ -2,11 +2,10 @@ package cn.gjy.blog.dao;
 
 import cn.gjy.blog.dao.method.BlogMethodSql;
 import cn.gjy.blog.dao.method.CategoryMethodSql;
+import cn.gjy.blog.dao.method.CommentMethodSql;
 import cn.gjy.blog.framework.Invocation.DaoInvocationHandlerImpl;
 import cn.gjy.blog.framework.annotation.*;
-import cn.gjy.blog.model.Article;
-import cn.gjy.blog.model.Category;
-import cn.gjy.blog.model.DetailedArticle;
+import cn.gjy.blog.model.*;
 
 import java.util.List;
 
@@ -121,4 +120,19 @@ public interface BlogDao {
 
     @Select("select * from article where id=#{id} and status<>4")
     Article selectBlogById(@BindParam("id") Integer id);
+
+    @UseCustomMethod(value = CommentMethodSql.CommentCountMethod.class
+            ,sqlType = DaoInvocationHandlerImpl.SqlType.SELECT)
+    int getUserBlogCommentCount(SysUser user, String keyword,Integer showType);
+
+    @UseCustomMethod(value = CommentMethodSql.CommentDataMethod.class
+            ,sqlType = DaoInvocationHandlerImpl.SqlType.SELECT)
+    List<Comment> selectUserBlogCommentList(SysUser user, String keyword,Integer page,Integer size,Integer showType);
+
+    @Update("update article set visit=visit+1 where id=#{id}")
+    int updateVisit(@BindParam("id") Integer id);
+
+    //获取所有文章访问量的总和
+    @Select("SELECT sum(visit) from article where user_id=#{userId}")
+    int getUserAllVisitCount(@BindParam("userId") Integer id);
 }

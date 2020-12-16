@@ -25,6 +25,24 @@ public class Comment {
     private String articlePassword;
     private String userName;
     private boolean canDelete;
+    private String articleTitle;
+    private String articleUrl;
+
+    public String getArticleUrl() {
+        return articleUrl;
+    }
+
+    public void setArticleUrl(String articleUrl) {
+        this.articleUrl = articleUrl;
+    }
+
+    public String getArticleTitle() {
+        return articleTitle;
+    }
+
+    public void setArticleTitle(String articleTitle) {
+        this.articleTitle = articleTitle;
+    }
 
     public boolean isCanDelete() {
         return canDelete;

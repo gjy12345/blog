@@ -9,7 +9,6 @@ package cn.gjy.blog.model;
 public class DetailedArticle extends Article{
     private String typeName;
     private String pubLevelName;
-    private Integer visit;//访问量
     private Integer common;//评论数
     private Integer up;//点赞数
     private String userName;
@@ -47,14 +46,6 @@ public class DetailedArticle extends Article{
         this.pubLevelName = pubLevelName;
     }
 
-    public Integer getVisit() {
-        return visit;
-    }
-
-    public void setVisit(Integer visit) {
-        this.visit = visit;
-    }
-
     public Integer getCommon() {
         return common;
     }
@@ -76,7 +67,6 @@ public class DetailedArticle extends Article{
         return "DetailedArticle{" +
                 "typeName='" + typeName + '\'' +
                 ", pubLevelName='" + pubLevelName + '\'' +
-                ", visit=" + visit +
                 ", common=" + common +
                 ", up=" + up +
                 ", id=" + id +

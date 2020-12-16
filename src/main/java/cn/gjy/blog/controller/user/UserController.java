@@ -1,6 +1,8 @@
 package cn.gjy.blog.controller.user;
 
 import cn.gjy.blog.common.ContentString;
+import cn.gjy.blog.dao.BlogDao;
+import cn.gjy.blog.dao.CommentDao;
 import cn.gjy.blog.framework.annotation.*;
 import cn.gjy.blog.framework.config.FrameworkConfig;
 import cn.gjy.blog.framework.model.Model;
@@ -9,10 +11,12 @@ import cn.gjy.blog.model.MenuModel;
 import cn.gjy.blog.model.SysUser;
 import cn.gjy.blog.service.CommonService;
 import cn.gjy.blog.service.UserService;
+import cn.gjy.blog.utils.TimeUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.List;
 
@@ -30,6 +34,12 @@ public class UserController {
 
     @InitObject
     private CommonService commonService;
+
+    @InitObject
+    private BlogDao blogDao;
+
+    @InitObject
+    private CommentDao commentDao;
 
     @Route("/")
     public String index(@BindParam(value = ContentString.USER_SESSION_TAG
@@ -78,11 +88,15 @@ public class UserController {
     //后台首页
     @Route(value = "/welcome",method = Route.HttpMethod.GET)
     public String welcome(Model model,@BindParam(value = ContentString.USER_SESSION_TAG,
-            from = HttpSession.class) SysUser user){
+            from = HttpSession.class) SysUser user) throws ParseException {
         model.setAttribute("nowTime",commonService.getHourWelcome(null));
         model.setAttribute("operations",commonService.getUserOperations(user,null));
         model.setAttribute("blogCount",userService.getUserBlogCount(user));
         model.setAttribute("recentBlogs",userService.getUserRecentBlogs(user));
+        model.setAttribute("allVisit",blogDao.getUserAllVisitCount(user.getId()));
+        model.setAttribute("allComment",commentDao.getUserAllCommentCount(user.getId()));
+        model.setAttribute("recentComments",commentDao.selectUserRecentComments(user.getId()));
+        model.setAttribute("createDays", TimeUtils.getDays(user.getCreateTime()));
         return "user/welcome";
     }
 

@@ -60,6 +60,7 @@ public class BlogMethodSql {
                     "article.title,\n" +
                     "article.type,\n" +
                     "article.url,\n" +
+                    "article.visit,\n" +
                     "article.publicity_level\n" +
                     ",category.name as typeName from article left join category\n" +
                     "on category.id=article.type where article.user_id=? ");

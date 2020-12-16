@@ -35,4 +35,8 @@ public interface BlogService {
     String selectBlogDetailsByUrl(String url, String password, Model model);
 
     CheckResult<Integer> editBlog(Article article, SysUser user, String remoteAddr);
+
+    TableData<List<Comment>> getCommentsList(SysUser user,String keyword,Integer page,Integer showType);
+
+    CheckResult<Void> deleteComment(SysUser user, Integer id);
 }

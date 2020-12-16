@@ -1,5 +1,7 @@
 package cn.gjy.blog.utils;
 
+import cn.gjy.blog.framework.controller.HttpRequestUtil;
+import cn.gjy.blog.model.SysUser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Attributes;
@@ -8,6 +10,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
 /**
@@ -48,5 +52,26 @@ public class BlogUtil {
             }
         }
         return document.body().toString();
+    }
+
+    //记录访问时间戳
+    private static Map<String,Long> visitMap=new ConcurrentHashMap<>();
+
+    //间隔至少两个小时
+    public static boolean needAddVisit(Integer id) {
+        //拼接变成key
+        String remoteIp = HttpRequestUtil.getRemoteIp()+id;
+        Long lastVisit;
+        if((lastVisit=visitMap.get(remoteIp))==null){
+            visitMap.put(remoteIp,System.currentTimeMillis());
+            return true;
+        }
+        long now= System.currentTimeMillis();
+        long jg=1000*60*60*2;//两个小时
+        if(now-lastVisit>=jg){
+            visitMap.put(remoteIp,now);
+            return true;
+        }
+        return false;
     }
 }

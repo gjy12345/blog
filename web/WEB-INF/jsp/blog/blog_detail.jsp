@@ -18,10 +18,17 @@
                     <header class="entry-header">
                         <h1 class="entry-title">${blog.title}</h1>
                         <div class="entry-meta">
+                            <c:if test="${blog.face!=null}">
+                                <span class="post-category"><img height="18px" src="${blog.face}"/></span>
+                            </c:if>
+                            <c:if test="${blog.face==null}">
+                                <span class="post-category"><img height="18px" src="${pageContext.request.contextPath}/static/img/face.png"/></span>
+                            </c:if>
+                            <span class="post-author"><a href="#">${blog.userName}</a></span>
                             <span class="post-category"><a href="#">${blog.typeName}</a></span>
                             <span class="post-date"><a href="#"><time class="entry-date"
                                                                       datetime="${blog.createTime}">${blog.createTime}</time></a></span>
-                            <span class="post-author"><a href="#">${blog.userName}</a></span>
+
                             <span class="comments-link"><a href="#">${blog.common} 评论</a></span>
                             <span class="views-count"><a href="#">${blog.visit} 阅读</a></span>
                         </div>
@@ -183,14 +190,14 @@
             let commentList=$("#comment_list");
             let html='';
             for(let i=0;i<data.length;i++){
-                html=html+'<li class="comment-item">' +
+                html=html+'<li class="comment-item" id="line'+(((page-1)*10)+i+1)+'">' +
                     '<span class="nickname"><span>'+(
                         (nowPage-1)*10+i+1
                     )+'#&nbsp;</span>'+data[i].userName+'<span style="color:orangered">&nbsp;' +
                     (data[i].userType==2?'作者':data[i].userType==1?'管理员':'') +
                     '</span></span>' +
                     '<time class="submit-date" datetime="'+data[i].commonTime+'">'+data[i].commonTime+'</time>' +
-                    (data[i].canDelete?'<a href="javascript:void(0)" onclick="delete_comment('+data[i].id+')" style="color: lightslategray;">&nbsp;删除</a>':'')+
+                    (data[i].canDelete?'<a href="javascript:void(0)" onclick="deleteComment('+data[i].id+','+(((page-1)*10)+i+1)+')" style="color: lightslategray;">&nbsp;删除</a>':'')+
                     '<div class="text" style="text-indent: 2em">' +
                     ''+data[i].content+'' +
                     '</div>' +
@@ -205,10 +212,6 @@
 
         function loadMore(){
             loadComment(nowPage+1)
-        }
-
-        function delete_comment(id){
-
         }
 
         function comment(){
@@ -243,6 +246,29 @@
                 error: function () {
                     layer.msg('评论失败');
                 }
+            });
+        }
+
+        function deleteComment(commentId,rowIndex){
+            let row=$("#line"+rowIndex);
+            layer.confirm('是否确认删除此评论？', function (index) {
+                $.ajax({
+                    url: '${pageContext.request.contextPath}/user/manage/comment/delete',
+                    type: 'post',
+                    async: true,
+                    data:{id:commentId},
+                    success: function (data) {
+                        if(data.result==1){
+                            layer.msg('删除成功!')
+                            row.remove();
+                        }else {
+                            layer.msg(data.msg)
+                        }
+                    },
+                    error: function (data) {
+                        layer.msg('发生了错误!');
+                    }
+                })
             });
         }
 

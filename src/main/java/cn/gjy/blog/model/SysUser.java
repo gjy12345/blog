@@ -17,7 +17,7 @@ public class SysUser {
     private String nickname;
     private Integer lock;
     @Alias("last_login_time")
-    private Date lastLoginTime;
+    private String lastLoginTime;
     @Alias("last_login_ip")
     private String lastLoginIp;
     @Alias("user_type")
@@ -25,6 +25,16 @@ public class SysUser {
     private String face;
     private Integer level;
     private String sign;
+    @Alias("create_time")
+    private String createTime;
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(String createTime) {
+        this.createTime = createTime;
+    }
 
     public static final int USER=1;
     public static final int ADMIN=0;
@@ -93,11 +103,11 @@ public class SysUser {
         this.lock = lock;
     }
 
-    public Date getLastLoginTime() {
+    public String getLastLoginTime() {
         return lastLoginTime;
     }
 
-    public void setLastLoginTime(Date lastLoginTime) {
+    public void setLastLoginTime(String lastLoginTime) {
         this.lastLoginTime = lastLoginTime;
     }
 
@@ -126,5 +136,22 @@ public class SysUser {
         public static final int SYS_USER=1;
         public static final int SYS_GUEST=2;
     }
-    
+
+    @Override
+    public String toString() {
+        return "SysUser{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", lock=" + lock +
+                ", lastLoginTime='" + lastLoginTime + '\'' +
+                ", lastLoginIp='" + lastLoginIp + '\'' +
+                ", userType=" + userType +
+                ", face='" + face + '\'' +
+                ", level=" + level +
+                ", sign='" + sign + '\'' +
+                ", createTime='" + createTime + '\'' +
+                '}';
+    }
 }

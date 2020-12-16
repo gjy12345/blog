@@ -42,7 +42,7 @@ To change this template use File | Settings | File Templates.
 								<span class="post-date"><a href="javascript:void(0)"><time class="entry-date" datetime="${blog.createTime}">${blog.createTime}</time></a></span>
 
 								<span class="post-category"><a href="javascript:void(0)">分类: ${blog.typeName}</a></span>
-
+								<span class="comments-link"><a href="javascript:void(0)">${blog.visit} 浏览</a></span>
 								<span class="comments-link"><a href="javascript:void(0)">${blog.common} 评论</a></span>
 
 								<span class="comments-link"><a href="javascript:void(0)">${blog.up} 赞同</a></span>

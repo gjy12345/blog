@@ -45,7 +45,7 @@ To change this template use File | Settings | File Templates.
 					<dl class="layui-nav-child">
 						<!-- 二级菜单 -->
 						<dd>
-							<a onclick="WeAdminShow('个人信息','http://www.baidu.com')">个人信息</a>
+							<a onclick="WeAdminShow('个人信息','${pageContext.request.contextPath}/user/info')">个人信息</a>
 						</dd>
 						<dd>
 							<a class="loginout" href="${pageContext.request.contextPath}/user/exit">切换帐号</a>

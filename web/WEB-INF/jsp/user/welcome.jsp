@@ -37,42 +37,31 @@ To change this template use File | Settings | File Templates.
 									<div carousel-item="">
 										<ul class="layui-row layui-col-space10 layui-this">
 											<li class="layui-col-xs3">
-												<a href="http://www.layui.com/doc/" target="_blank">
+												<a href="javascript:void(0)">
 													<i class="layui-icon">${blogCount}</i>
 													<cite>博客数量</cite>
 												</a>
 											</li>
 											<li class="layui-col-xs3">
-												<a href="http://www.layui.com/admin/" target="_blank">
-													<i class="layui-icon">22
-														<i class="layui-icon-top "
-														   style="font-size: 16px;color: red;">
-															+1
-														</i>
+												<a href="javascript:void(0)">
+													<i class="layui-icon">
+														${allComment}
 													</i>
 													<cite>评论</cite>
 												</a>
 											</li>
 											<li class="layui-col-xs3">
-												<a href="http://layim.layui.com/" target="_blank">
-													<i class="layui-icon">290
-														<i class="layui-icon-top "
-														   style="font-size: 16px;color: red;">
-															+1
-														</i>
+												<a href="javascript:void(0)">
+													<i class="layui-icon">${allVisit}
 													</i>
 													<cite>阅读量</cite>
 												</a>
 											</li>
 											<li class="layui-col-xs3">
-												<a href="http://fly.layui.com/case/u/777504" target="_blank">
-													<i class="layui-icon">22
-														<i class="layui-icon-top "
-														   style="font-size: 16px;color: red;">
-															+1
-														</i>
+												<a href="javascript:void(0)">
+													<i class="layui-icon">${createDays}天
 													</i>
-													<cite>点赞</cite>
+													<cite>已创作</cite>
 												</a>
 											</li>
 											
@@ -112,17 +101,11 @@ To change this template use File | Settings | File Templates.
 										</div>
 									</div>
 									<div class="col-md-12">
-										<div class="col-md-3">
-											等级:LV${USER_SESSION_TAG.level}
+										<div class="col-md-6">
+											登录ip: <a href="javascript:void(0)">${USER_SESSION_TAG.lastLoginIp}</a>
 										</div>
-										<div class="col-md-3">
-											粉丝: <a href="">21</a>
-										</div>
-										<div class="col-md-3">
-											关注: <a href="">12</a>
-										</div>
-										<div class="col-md-3">
-											访问量: <a href="">12</a>
+										<div class="col-md-6">
+											登录时间: <a href="javascript:void(0)">${USER_SESSION_TAG.lastLoginTime}</a>
 										</div>
 									</div>
 								</article>
@@ -169,7 +152,7 @@ To change this template use File | Settings | File Templates.
 							<div class="col-md-12">
 								<c:forEach items="${recentBlogs}" var="blog" varStatus="s">
 									<div class="entry-content clearfix table-bordered" style="padding-bottom: 10px;padding-top: 10px;">
-										<div class="entry-title col-md-10 font16" >
+										<div class="entry-title col-md-9 font16" >
 											<a href="${pageContext.request.contextPath}/article/detail?url=${blog.url}" target="_blank">
 													<c:choose>
 														<c:when test="${blog.publicityLevel==7}">
@@ -185,7 +168,7 @@ To change this template use File | Settings | File Templates.
 												[博客] ${blog.title}
 											</a>
 										</div>
-										<div class="col-md-2">
+										<div class="col-md-3">
 												${blog.createTime}
 										</div>
 									</div>
@@ -196,15 +179,17 @@ To change this template use File | Settings | File Templates.
 					<blockquote class="layui-elem-quote font16">最新评论</blockquote>
 					<div class="col-md-12" style="min-height: 300px">
 						<div class="col-md-12">
-							<div class="entry-content clearfix table-bordered" style="padding-bottom: 10px;padding-top: 10px;">
-								<div class="entry-title col-md-10 font16" >
-									<a href="single.html"></a>[评论] <a href="">Linus</a>: 你这个是怎么是实现的?&emsp;
-									<a href="">[查看]</a>
+							<c:forEach items="${recentComments}" var="comment">
+								<div class="entry-content clearfix table-bordered" style="padding-bottom: 10px;padding-top: 10px;">
+									<div class="entry-title col-md-9 font16" >
+										<a href="single.html"></a>[评论] <a href="">${comment.userName}</a>: ${comment.content}&emsp;
+										<a href="${pageContext.request.contextPath}/article/detail?url=${comment.articleUrl}" target="_blank">[查看]</a>
+									</div>
+									<div class="col-md-3">
+										${comment.commonTime}
+									</div>
 								</div>
-								<div class="col-md-2">
-									2020-10-1
-								</div>
-							</div>
+							</c:forEach>
 						</div>
 					</div>
 				</div>

@@ -40,8 +40,12 @@ public class InterceptorFactoryImpl implements InterceptorFactory{
     @Override
     public List<Interceptor> getHandles(String url) {
         List<Interceptor> matches=new ArrayList<>();
-        pattens.parallelStream().filter(s ->
-             url.matches(s) &&!url.matches(interceptorMap.get(s).registerExcludePatten())
+        pattens.parallelStream().filter(s -> {
+                    if(interceptorMap.get(s).registerExcludePatten()==null){
+                        return url.matches(s);
+                    }
+                    return url.matches(s)&&!url.matches(interceptorMap.get(s).registerExcludePatten());
+                }
         ).forEach(s -> {
             matches.add(interceptorMap.get(s));
         });

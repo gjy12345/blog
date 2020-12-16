@@ -198,4 +198,26 @@ public class BlogManageController {
             , HttpServletRequest request){
         return blogService.editBlog(article,user,request.getRemoteAddr());
     }
+
+    @Route(("/comment"))
+    public String toComment(){
+        return "blog/comment_list";
+    }
+
+    @ResponseBody
+    @Route(value = "/comment/list",method = Route.HttpMethod.POST)
+    public TableData<List<Comment>> getCommentList(@BindParam(value = ContentString.USER_SESSION_TAG,
+            from = HttpSession.class) SysUser user,@BindParam("keyword") String keyword,
+                                                   @BindParam("page") Integer page,
+                                                   @BindParam("showType")Integer showType){
+        return blogService.getCommentsList(user,keyword,page,showType);
+    }
+
+    @ResponseBody
+    @Route(value = "/comment/delete",method = Route.HttpMethod.POST)
+    public CheckResult<Void> deleteComment(@BindParam(value = ContentString.USER_SESSION_TAG,
+            from = HttpSession.class) SysUser user,
+                                           @BindParam("id") Integer id){
+        return blogService.deleteComment(user,id);
+    }
 }

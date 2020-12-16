@@ -44,7 +44,6 @@ public class ArticleServiceImpl implements ArticleService {
            }
            article.setCommon(commentDao.selectArticleCommentsCount(article.getId()));
            article.setUp(0);
-           article.setVisit(0);
            if(article.getType()==null)
                article.setTypeName("未分类");
         });

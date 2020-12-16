@@ -186,9 +186,8 @@ public class BlogServiceImpl implements BlogService {
         tableData.setTotal(blogDao.selectUserBlogsCount(article,isDelete));
         tableData.setData(blogDao.selectUserBlogsByArgs(article, page, pageSize,isDelete));
         tableData.getData().forEach(detailedArticle -> {
-            detailedArticle.setCommon(0);
+            detailedArticle.setCommon(commentDao.selectArticleCommentsCount(detailedArticle.getId()));
             detailedArticle.setUp(0);
-            detailedArticle.setVisit(0);
             if (detailedArticle.getUpdateTime() == null)
                 detailedArticle.setUpdateTime(detailedArticle.getCreateTime());
             if(detailedArticle.getTypeName()==null){
@@ -400,12 +399,44 @@ public class BlogServiceImpl implements BlogService {
         return CheckResult.createFailResult("没有此博客或博客状态错误");
     }
 
-    private void setBlogDetailInfo(Model model,DetailedArticle article){
+    @Override
+    public TableData<List<Comment>> getCommentsList(SysUser user,String keyword,Integer page,Integer showType) {
+        page=page==null?0:page-1;
+        TableData<List<Comment>> tableData=new TableData<>();
+        tableData.setTotal(blogDao.getUserBlogCommentCount(user,keyword,showType));
+        tableData.setData(blogDao.selectUserBlogCommentList(user,keyword,page,pageSize,showType));
+        return tableData;
+    }
+
+    @Override
+    public CheckResult<Void> deleteComment(SysUser user, Integer id) {
+        Comment comment=commentDao.selectCommentById(id);
+        if(comment==null)
+            return CheckResult.createFailResult("无此评论");
+        if(comment.getUserId().equals(user.getId())){
+            return deleteComment(id);
+        }
+        Article article=blogDao.selectBlogById(comment.getArticleId());
+        if(article==null){
+            return CheckResult.createFailResult("无此权限删除非自己的评论");
+        }
+        if(article.getUserId().equals(user.getId())){
+            return deleteComment(id);
+        }
+        return CheckResult.createFailResult("删除失败");
+    }
+
+    private CheckResult<Void> deleteComment(Integer id){
+        return commentDao.deleteComment(id)==1?
+                CheckResult.createSuccessResult(null,"删除成功"):
+                CheckResult.createFailResult("删除失败");
+    }
+
+    private void setBlogDetailInfo(Model model, DetailedArticle article){
         if(article.getType()==null){
             article.setTypeName("未分类");
         }
         article.setCommon(commentDao.selectArticleCommentsCount(article.getId()));
-        article.setVisit(0);
         article.setUp(0);
         model.setAttribute("blog",article);
         //获取作者最近几篇文章
@@ -417,6 +448,10 @@ public class BlogServiceImpl implements BlogService {
         List<Category> userBlogCategories = blogDao.getUserBlogCategories(category, 0, 10);
         userBlogCategories.forEach(cate -> cate.setBlogUseCount(blogDao.getUserBlogCategoriesCount(cate)));
         model.setAttribute("author_categories",userBlogCategories);
-        //获取所有评论
+        //添加浏览量
+        if (BlogUtil.needAddVisit(article.getId())) {
+            blogDao.updateVisit(article.getId());
+            article.setVisit(article.getVisit()+1);
+        }
     }
 }
