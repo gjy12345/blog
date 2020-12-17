@@ -27,6 +27,15 @@ public class SysUser {
     private String sign;
     @Alias("create_time")
     private String createTime;
+    private Integer blogCount;
+
+    public Integer getBlogCount() {
+        return blogCount;
+    }
+
+    public void setBlogCount(Integer blogCount) {
+        this.blogCount = blogCount;
+    }
 
     public String getCreateTime() {
         return createTime;

@@ -30,12 +30,12 @@ public class UserInterceptor implements Interceptor {
     @Override
     public String registerPatten() {
 //        return "/user/.+?";
-        return "/user/.*?";
+        return "/user/manage/.*?";
     }
 
     @Override
     public String registerExcludePatten() {
-//        return "/user/login";
+//        return ""/user/manage/login"";
         return "";
     }
 

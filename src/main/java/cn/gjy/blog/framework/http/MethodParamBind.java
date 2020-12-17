@@ -49,6 +49,12 @@ public class MethodParamBind {
                     objects[i]=changeStringToBasicData(parameters[i].getType(),request.getHeader(bindParam.header()));
                 }else
                     throw new RuntimeException("error bind.");
+                if(bindParam.required()){
+                    if(objects[i]==null){
+                        log.v("参数缺失: value:"+bindParam.value()+" from:"+bindParam.from());
+                        throw new RuntimeException("参数缺失");
+                    }
+                }
             }else if(parameters[i].getAnnotation(JsonRequestBody.class)!=null
             ||parameters[i].getAnnotation(RequestBody.class)!=null){
                 objects[i]=jsonSerializeBean(request,parameters[i].getType());

@@ -7,6 +7,7 @@ import cn.gjy.blog.framework.annotation.Service;
 import cn.gjy.blog.model.Article;
 import cn.gjy.blog.model.DetailedArticle;
 import cn.gjy.blog.service.ArticleService;
+import cn.gjy.blog.service.BlogService;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -24,6 +25,9 @@ public class ArticleServiceImpl implements ArticleService {
 
     @InitObject
     private CommentDao commentDao;
+
+    @InitObject
+    private BlogService blogService;
 
     @Override
     public List<DetailedArticle> selectRecentBlogs() {

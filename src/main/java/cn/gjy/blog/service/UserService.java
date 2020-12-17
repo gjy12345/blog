@@ -1,9 +1,6 @@
 package cn.gjy.blog.service;
 
-import cn.gjy.blog.model.Article;
-import cn.gjy.blog.model.CheckResult;
-import cn.gjy.blog.model.MenuModel;
-import cn.gjy.blog.model.SysUser;
+import cn.gjy.blog.model.*;
 
 import java.util.List;
 
@@ -21,9 +18,15 @@ public interface UserService {
 
     SysUser getTestUser();
 
-    Integer getUserBlogCount(SysUser user);
+    Integer getUserBlogCount(Integer userId);
 
     List<Article> getUserRecentBlogs(SysUser user);
 
     CheckResult<Void> editUserInfo(SysUser user, SysUser uploadUser);
+
+    SysUser getUserInfo(Integer userId);
+
+    TableData<List<Category>> getUserCategories(Integer userId, Integer page);
+
+    boolean getUserFollow(Integer see, Integer beSee);
 }

@@ -24,13 +24,13 @@
                             <c:if test="${blog.face==null}">
                                 <span class="post-category"><img height="18px" src="${pageContext.request.contextPath}/static/img/face.png"/></span>
                             </c:if>
-                            <span class="post-author"><a href="#">${blog.userName}</a></span>
-                            <span class="post-category"><a href="#">${blog.typeName}</a></span>
-                            <span class="post-date"><a href="#"><time class="entry-date"
+                            <span class="post-author"><a href="${pageContext.request.contextPath}/user/info?userId=${blog.userId}" target="_blank">${blog.userName}</a></span>
+                            <span class="post-category"><a href="javascript:void(0)">${blog.typeName}</a></span>
+                            <span class="post-date"><a href="javascript:void(0)"><time class="entry-date"
                                                                       datetime="${blog.createTime}">${blog.createTime}</time></a></span>
 
-                            <span class="comments-link"><a href="#">${blog.common} 评论</a></span>
-                            <span class="views-count"><a href="#">${blog.visit} 阅读</a></span>
+                            <span class="comments-link"><a href="javascript:void(0)">${blog.common} 评论</a></span>
+                            <span class="views-count"><a href="javascript:void(0)">${blog.visit} 阅读</a></span>
                         </div>
                     </header>
                     <div id="test-markdown-view" style="padding-left: 0px;margin-right: 0px;padding-top: 0px">
@@ -193,9 +193,9 @@
                 html=html+'<li class="comment-item" id="line'+(((page-1)*10)+i+1)+'">' +
                     '<span class="nickname"><span>'+(
                         (nowPage-1)*10+i+1
-                    )+'#&nbsp;</span>'+data[i].userName+'<span style="color:orangered">&nbsp;' +
+                    )+'#&nbsp;</span><a href="${pageContext.request.contextPath}/user/info?userId='+data[i].userId+'" target="_blank">'+data[i].userName+'<span style="color:orangered">&nbsp;' +
                     (data[i].userType==2?'作者':data[i].userType==1?'管理员':'') +
-                    '</span></span>' +
+                    '</span></a></span>' +
                     '<time class="submit-date" datetime="'+data[i].commonTime+'">'+data[i].commonTime+'</time>' +
                     (data[i].canDelete?'<a href="javascript:void(0)" onclick="deleteComment('+data[i].id+','+(((page-1)*10)+i+1)+')" style="color: lightslategray;">&nbsp;删除</a>':'')+
                     '<div class="text" style="text-indent: 2em">' +

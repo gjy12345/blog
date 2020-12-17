@@ -297,7 +297,7 @@ public class MainServlet extends HttpServlet {
                 }
             }
         }catch (Exception e) {
-            log.v(e.getMessage());
+            log.v(e.getMessage()+" url:"+url);
             try {
                 if(errorHandle!=null){
                     errorHandle.onException(e,url, method,req,resp, result==null?null:result.getMethod());

@@ -35,4 +35,10 @@ public interface UserDao {
     @Update("update sys_user set nickname=#{nickname}," +
             "sign=#{sign},password=#{password},face=#{face} where id=#{id}")
     int updateUserInfo(SysUser uploadUser);
+
+    @Select("select * from sys_user where id=#{id}")
+    SysUser selectUserById(@BindParam("id") Integer userId);
+
+    @Select("select count(*) from follow where user_id=#{see} and follow_id=#{beSee}")
+    int checkFollow(@BindParam("see") Integer see,@BindParam("beSee") Integer beSee);
 }

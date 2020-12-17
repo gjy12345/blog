@@ -297,6 +297,7 @@ public class DaoInvocationHandlerImpl<T> implements InvocationHandler {
                     break;
             }
             log.v("returnCount   ===> "+returnCount);
+            log.v("returnCount   ===> "+returnValue);
             return returnValue;
         }catch (Exception e){
             log.e(e.getMessage());

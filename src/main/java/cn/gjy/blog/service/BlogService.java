@@ -39,4 +39,8 @@ public interface BlogService {
     TableData<List<Comment>> getCommentsList(SysUser user,String keyword,Integer page,Integer showType);
 
     CheckResult<Void> deleteComment(SysUser user, Integer id);
+
+    TableData<List<DetailedArticle>> getUserPublicArticles(Integer userId, Integer page);
+
+    void setRankingData(Model model);
 }

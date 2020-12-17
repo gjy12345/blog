@@ -9,6 +9,8 @@ import cn.gjy.blog.framework.annotation.Route;
 import cn.gjy.blog.framework.config.FrameworkConfig;
 import cn.gjy.blog.framework.model.Model;
 import cn.gjy.blog.model.Article;
+import cn.gjy.blog.model.Category;
+import cn.gjy.blog.model.TableData;
 import cn.gjy.blog.service.BlogService;
 
 /**
@@ -33,5 +35,13 @@ public class BlogController {
         return ContentString.BASE_JSP;
     }
 
+
+    //排行
+    @Route("/ranking")
+    public String ranking(Model model){
+        model.setAttribute(ContentString.CHILD_JSP,FrameworkConfig.getJspPath("blog/blog_ranking"));
+        blogService.setRankingData(model);
+        return ContentString.BASE_JSP;
+    }
 
 }

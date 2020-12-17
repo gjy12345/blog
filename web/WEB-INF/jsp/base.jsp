@@ -51,8 +51,8 @@ To change this template use File | Settings | File Templates.
                         <ul class="nav navbar-nav navbar-right">
                             <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/">探索</a></li>
                             <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/user/follow">关注</a></li>
-                            <li class="cl-effect-11"><a href="about.html">排行</a></li>
-                            <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/user/">我的</a></li>
+                            <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/article/ranking">排行</a></li>
+                            <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/user/manage/">我的</a></li>
                         </ul>
                     </div><!-- /.navbar-collapse -->
                 </nav>
@@ -88,8 +88,8 @@ To change this template use File | Settings | File Templates.
         <ul>
             <li><a href="#">探索</a></li>
             <li><a href="${pageContext.request.contextPath}/user/follow">关注</a></li>
-            <li><a href="about.html">排行</a></li>
-            <li><a href="${pageContext.request.contextPath}/user/">我的</a></li>
+            <li><a href="${pageContext.request.contextPath}/article/ranking">排行</a></li>
+            <li><a href="${pageContext.request.contextPath}/user/manage/">我的</a></li>
         </ul>
     </nav>
 </div>

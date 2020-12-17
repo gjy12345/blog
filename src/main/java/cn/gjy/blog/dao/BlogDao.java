@@ -133,6 +133,33 @@ public interface BlogDao {
     int updateVisit(@BindParam("id") Integer id);
 
     //获取所有文章访问量的总和
-    @Select("SELECT sum(visit) from article where user_id=#{userId}")
+    @Select("SELECT COALESCE(sum(visit),0) from article where user_id=#{userId}")
     int getUserAllVisitCount(@BindParam("userId") Integer id);
+
+    @Select("select count(*) from article where user_id=#{userId} and (publicity_level=6 or publicity_level=7)" +
+            "and status=1")
+    int getUserPublicBlogCount(@BindParam("userId") Integer userId);
+
+    @Select("select article.*,category.name as typeName from article left join " +
+            "category on category.id=article.type where user_id=#{userId} and (publicity_level=6 or publicity_level=7)" +
+            "and status=1 order by id desc limit #{s},#{e}")
+    List<DetailedArticle> selectUserPublicBlogs(@BindParam("userId") Integer userId,@BindParam("s")  int s,@BindParam("e")  int e);
+
+    @Select("select article.title,article.url,category.name as typeName,sys_user.nickname as userName from article left join " +
+            "category on category.id=article.type " +
+            "left join sys_user on sys_user.id=article.user_id where (publicity_level=6 or publicity_level=7)" +
+            "and status=1 order by article.visit desc limit 0,10")
+    List<DetailedArticle> selectVisitRankingBlogs();
+
+    @Select("SELECT sys_user.*,b.blogCount from (SELECT count(*) as blogCount,user_id from article GROUP BY user_id) as b \n" +
+            "left join sys_user on sys_user.id=b.user_id\n" +
+            "order by b.blogCount desc LIMIT 0,10;")
+    List<SysUser> selectCzRanking();
+
+    @Select("SELECT article.title,article.url,b.common FROM (SELECT article_id,COUNT(*) as common from `comment`\n" +
+            "GROUP BY article_id ) as b\n" +
+            "left join article on article.id=b.article_id\n" +
+            "order by b.common desc \n" +
+            "limit 0,10")
+    List<DetailedArticle> selectCommentRanking();
 }

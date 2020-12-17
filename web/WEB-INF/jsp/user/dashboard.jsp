@@ -45,13 +45,13 @@ To change this template use File | Settings | File Templates.
 					<dl class="layui-nav-child">
 						<!-- 二级菜单 -->
 						<dd>
-							<a onclick="WeAdminShow('个人信息','${pageContext.request.contextPath}/user/info')">个人信息</a>
+							<a onclick="WeAdminShow('个人信息','${pageContext.request.contextPath}/user/info?userId=${USER_SESSION_TAG.id}')">个人信息</a>
 						</dd>
 						<dd>
-							<a class="loginout" href="${pageContext.request.contextPath}/user/exit">切换帐号</a>
+							<a class="loginout" href="${pageContext.request.contextPath}/user/manage/exit">切换帐号</a>
 						</dd>
 						<dd>
-							<a class="loginout" href="${pageContext.request.contextPath}/user/exit">退出</a>
+							<a class="loginout" href="${pageContext.request.contextPath}/user/manage/exit">退出</a>
 						</dd>
 					</dl>
 				</li>
@@ -77,7 +77,7 @@ To change this template use File | Settings | File Templates.
 				</ul>
 				<div class="layui-tab-content">
 					<div class="layui-tab-item layui-show">
-						<iframe src='${pageContext.request.contextPath}/user/welcome' frameborder="0" scrolling="yes" class="weIframe" style="height: 100%"></iframe>
+						<iframe src='${pageContext.request.contextPath}/user/manage/welcome' frameborder="0" scrolling="yes" class="weIframe" style="height: 100%"></iframe>
 					</div>
 				</div>
 			</div>
@@ -111,7 +111,7 @@ To change this template use File | Settings | File Templates.
 					admin = layui.admin,
 					menu = layui.menu;
 				$(function(){
-					menu.getMenu('${pageContext.request.contextPath}/user/menu');
+					menu.getMenu('${pageContext.request.contextPath}/user/manage/menu');
 				});
 			});
 

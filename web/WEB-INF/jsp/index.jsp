@@ -18,16 +18,17 @@ To change this template use File | Settings | File Templates.
 							<p class="entry-title">
 								<a href="${pageContext.request.contextPath}/article/detail?url=${blog.url}">${blog.title}</a>
 							</p>
-							<c:if test="${blog.description!=null}">
-								<div class="entry-content clearfix">
-									<p>${blog.description}</p>
-								</div>
-							</c:if>
 							<c:if test="${blog.thumb!=null}">
 								<div class="entry-content clearfix">
 									<p><img src="${blog.thumb}" alt="" height="300px" width="auto"></p>
 								</div>
 							</c:if>
+							<c:if test="${blog.description!=null}">
+								<div class="entry-content clearfix">
+									<p>${blog.description}</p>
+								</div>
+							</c:if>
+
 							<div class="entry-meta">
 							<span class="post-face">
 								<c:if test="${blog.face==null}">
@@ -37,7 +38,7 @@ To change this template use File | Settings | File Templates.
 									<img src="${blog.face}" alt="">
 								</c:if>
 							</span>
-								<span class="post-author"><a href="javascript:void(0)">${blog.userName}</a></span>
+								<span class="post-author"><a href="${pageContext.request.contextPath}/user/info?userId=${blog.userId}" target="_blank">${blog.userName}</a></span>
 
 								<span class="post-date"><a href="javascript:void(0)"><time class="entry-date" datetime="${blog.createTime}">${blog.createTime}</time></a></span>
 
@@ -45,7 +46,6 @@ To change this template use File | Settings | File Templates.
 								<span class="comments-link"><a href="javascript:void(0)">${blog.visit} 浏览</a></span>
 								<span class="comments-link"><a href="javascript:void(0)">${blog.common} 评论</a></span>
 
-								<span class="comments-link"><a href="javascript:void(0)">${blog.up} 赞同</a></span>
 								<span class="comments-link"><a href="javascript:void(0)">${blog.pubLevelName}</a></span>
 							</div>
 						</header>

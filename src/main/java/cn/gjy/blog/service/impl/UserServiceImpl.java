@@ -81,8 +81,8 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Integer getUserBlogCount(SysUser user) {
-        return userDao.selectUserBlogCountById(user.getId());
+    public Integer getUserBlogCount(Integer userId) {
+        return userDao.selectUserBlogCountById(userId);
     }
 
     @Override
@@ -120,6 +120,29 @@ public class UserServiceImpl implements UserService{
             return CheckResult.createSuccessResult(null,"更新成功");
         }
         return CheckResult.createFailResult("更新失败");
+    }
+
+    @Override
+    public SysUser getUserInfo(Integer userId) {
+        return userDao.selectUserById(userId);
+    }
+
+    @Override
+    public TableData<List<Category>> getUserCategories(Integer userId, Integer page) {
+        TableData<List<Category>> tableData=new TableData<>();
+        Category category=new Category();
+        category.setCreateUser(userId);
+        tableData.setTotal(blogDao.getUserBlogCategoriesCount(category));
+        tableData.setData(blogDao.getUserBlogCategories(category,page==null?0:--page,10));
+        tableData.getData().forEach(cate-> {
+            cate.setBlogUseCount(blogDao.getBlogCountByCategory(cate.getId()));
+        });
+        return tableData;
+    }
+
+    @Override
+    public boolean getUserFollow(Integer see, Integer beSee) {
+        return userDao.checkFollow(see,beSee)==1;
     }
 
 }

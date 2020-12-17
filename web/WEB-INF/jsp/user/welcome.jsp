@@ -101,10 +101,10 @@ To change this template use File | Settings | File Templates.
 										</div>
 									</div>
 									<div class="col-md-12">
-										<div class="col-md-6">
+										<div class="col-md-4">
 											登录ip: <a href="javascript:void(0)">${USER_SESSION_TAG.lastLoginIp}</a>
 										</div>
-										<div class="col-md-6">
+										<div class="col-md-8">
 											登录时间: <a href="javascript:void(0)">${USER_SESSION_TAG.lastLoginTime}</a>
 										</div>
 									</div>

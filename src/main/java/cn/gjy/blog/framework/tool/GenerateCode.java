@@ -19,7 +19,7 @@ public class GenerateCode {
         QueueDataSourceImpl queueDataSource=new QueueDataSourceImpl();
         ConnectionUtil.setQueueDataSource(queueDataSource);
         Connection connection= ConnectionUtil.getConnection();
-        String table="up";
+        String table="follow";
         ResultSet query = connection.createStatement().executeQuery("select * from " + table);
         ResultSetMetaData metaData = query.getMetaData();
         int columnCount = metaData.getColumnCount();

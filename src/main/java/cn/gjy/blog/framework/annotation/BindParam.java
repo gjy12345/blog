@@ -13,4 +13,5 @@ public @interface BindParam {
     String value() default "";
     Class from() default HttpServletRequest.class;
     String header() default "";
+    boolean required() default false;//是否必须有
 }

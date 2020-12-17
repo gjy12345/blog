@@ -426,6 +426,41 @@ public class BlogServiceImpl implements BlogService {
         return CheckResult.createFailResult("删除失败");
     }
 
+    @Override
+    public TableData<List<DetailedArticle>> getUserPublicArticles(Integer userId, Integer page) {
+        TableData<List<DetailedArticle>> tableData=new TableData<>();
+        tableData.setTotal(blogDao.getUserPublicBlogCount(userId));
+        tableData.setData(blogDao.selectUserPublicBlogs(userId,page==null?0:--page,10));
+        tableData.getData().forEach(article -> {
+            if(article.getPublicityLevel()!=null){
+                switch (article.getPublicityLevel()){
+                    case Article.PubLevel.PUBLIC:
+                        article.setPubLevelName("公开");
+                        break;
+                    case Article.PubLevel.PRIVATE:
+                        article.setPubLevelName("私密");
+                        break;
+                    case Article.PubLevel.PASSWORD:
+                        article.setPubLevelName("需要密码");
+                        break;
+                }
+            }
+            article.setCommon(commentDao.selectArticleCommentsCount(article.getId()));
+            article.setUp(0);
+            if(article.getType()==null)
+                article.setTypeName("未分类");
+        });
+        return tableData;
+    }
+
+    @Override
+    public void setRankingData(Model model) {
+        model.setAttribute("visitRanking",blogDao.selectVisitRankingBlogs());
+        model.setAttribute("czRanking",blogDao.selectCzRanking());
+        model.setAttribute("commentRanking",blogDao.selectCommentRanking());
+    }
+
+
     private CheckResult<Void> deleteComment(Integer id){
         return commentDao.deleteComment(id)==1?
                 CheckResult.createSuccessResult(null,"删除成功"):
