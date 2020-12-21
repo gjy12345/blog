@@ -244,7 +244,7 @@ public class BlogManageController {
     @Route(value = "/exit")
     public String exitLogin(HttpSession session){
         session.invalidate();
-        return "redirect:"+ FrameworkConfig.contentPath+ "/user/";
+        return "redirect:"+ FrameworkConfig.contentPath+ "/user/manage/";
     }
 
     @Route("/editSelf")
@@ -288,10 +288,10 @@ public class BlogManageController {
             model.setAttribute("msg","*验证码错误!");
             return "user/login";
         }
-        CheckResult<SysUser> loginResult=userService.loginUser(sysUser);
+        CheckResult<SysUser> loginResult=userService.loginUser(sysUser,SysUser.USER);
         if(loginResult.getResult()== CheckResult.State.FAIL){
             model.setAttribute("msg",loginResult.getMsg());
-            return "/user/login";
+            return "user/login";
         }
         //登录成功
         session.setAttribute(ContentString.USER_SESSION_TAG,loginResult.getData());
@@ -321,7 +321,7 @@ public class BlogManageController {
     @ResponseBody
     @Route("/menu")
     public MenuModel getUserMenu(){
-        return userService.getUserMenuData();
+        return userService.getUserMenuData(SysUser.USER);
     }
 
 }

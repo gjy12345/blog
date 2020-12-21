@@ -12,9 +12,9 @@ import java.util.List;
  */
 public interface UserService {
 
-    MenuModel getUserMenuData();
+    MenuModel getUserMenuData(Integer userType);
 
-    CheckResult<SysUser> loginUser(SysUser sysUser);
+    CheckResult<SysUser> loginUser(SysUser sysUser,Integer type);
 
     SysUser getTestUser();
 
@@ -29,4 +29,6 @@ public interface UserService {
     TableData<List<Category>> getUserCategories(Integer userId, Integer page);
 
     boolean getUserFollow(Integer see, Integer beSee);
+
+    SysUser getTestAdminUser();
 }

@@ -44,4 +44,13 @@ public class HttpRequestUtil {
         }
         return false;
     }
+
+    public static Integer getAdminUserId() {
+        if(requestThreadLocal.get()!=null){
+            SysUser attribute = (SysUser) requestThreadLocal.get().getSession().getAttribute(ContentString.ADMIN_SESSION_TAG);
+            if(attribute!=null)
+                return attribute.getId();
+        }
+        return null;
+    }
 }

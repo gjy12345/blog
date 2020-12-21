@@ -1,9 +1,6 @@
 package cn.gjy.blog.dao;
 
-import cn.gjy.blog.framework.annotation.BindParam;
-import cn.gjy.blog.framework.annotation.Dao;
-import cn.gjy.blog.framework.annotation.Select;
-import cn.gjy.blog.framework.annotation.Update;
+import cn.gjy.blog.framework.annotation.*;
 import cn.gjy.blog.model.Article;
 import cn.gjy.blog.model.MenuModel;
 import cn.gjy.blog.model.SysUser;
@@ -18,8 +15,8 @@ import java.util.List;
 @Dao
 public interface UserDao {
 
-    @Select("select * from sys_menu where type=1;")
-    List<MenuModel.MenuData> selectUserMenuData();
+    @Select("select * from sys_menu where type=#{userType};")
+    List<MenuModel.MenuData> selectUserMenuData(@BindParam("userType") Integer userType);
 
     @Select("select * from sys_user where username=#{username} and user_type=#{type}")
     SysUser selectUserByUsername(@BindParam("username") String username,@BindParam("type") int user);
@@ -33,12 +30,23 @@ public interface UserDao {
     int updateUserLastLogin(@BindParam("ip") String remoteIp, @BindParam("time") String time,@BindParam("id") Integer id);
 
     @Update("update sys_user set nickname=#{nickname}," +
-            "sign=#{sign},password=#{password},face=#{face} where id=#{id}")
+            "sign=#{sign},password=#{password},face=#{face},sex=#{sex} where id=#{id}")
     int updateUserInfo(SysUser uploadUser);
 
-    @Select("select * from sys_user where id=#{id}")
-    SysUser selectUserById(@BindParam("id") Integer userId);
+    @Select("select * from sys_user where id=#{id} and user_type=#{userType}")
+    SysUser selectUserById(@BindParam("id") Integer userId,@BindParam("userType") Integer userType);
 
     @Select("select count(*) from follow where user_id=#{see} and follow_id=#{beSee}")
     int checkFollow(@BindParam("see") Integer see,@BindParam("beSee") Integer beSee);
+
+    @Select("select create_time from article where user_id=#{id} order by id limit 1")
+    String getUserLastReleaseTime(@BindParam("id") Integer id);
+
+    @Insert("INSERT INTO `sys_user` ( `username`, `password`, `nickname`, `lock`, `last_login_time`, `last_login_ip`, `user_type`, `face`, `sign`, `level`, `create_time`, `sex` ) " +
+            "VALUES(#{username},#{password},#{nickname},#{lock},null,null,#{user_type},#{face},#{sign},#{level},#{create_time},#{sex})")
+    int addNewUser(SysUser sysUser);
+
+    @Update("update sys_user set username=#{username},password=#{password}," +
+            "nickname=#{nickname},sys_user.lock=#{lock},sex=#{sex},sign=#{sign} where id=#{id}")
+    int updateUser(SysUser uploadUser);
 }

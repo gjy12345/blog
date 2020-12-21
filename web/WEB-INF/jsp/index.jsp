@@ -30,14 +30,7 @@ To change this template use File | Settings | File Templates.
 							</c:if>
 
 							<div class="entry-meta">
-							<span class="post-face">
-								<c:if test="${blog.face==null}">
-									<img src="${pageContext.request.contextPath}/static/img/face.png" alt="">
-								</c:if>
-								<c:if test="${blog.face!=null}">
-									<img src="${blog.face}" alt="">
-								</c:if>
-							</span>
+
 								<span class="post-author"><a href="${pageContext.request.contextPath}/user/info?userId=${blog.userId}" target="_blank">${blog.userName}</a></span>
 
 								<span class="post-date"><a href="javascript:void(0)"><time class="entry-date" datetime="${blog.createTime}">${blog.createTime}</time></a></span>

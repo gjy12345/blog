@@ -2,6 +2,7 @@ package cn.gjy.blog.listener;
 
 import cn.gjy.blog.common.ContentString;
 import cn.gjy.blog.framework.log.SimpleLog;
+import cn.gjy.blog.model.DetailedSysUser;
 import cn.gjy.blog.model.SysUser;
 
 import javax.servlet.annotation.WebListener;
@@ -20,6 +21,12 @@ public class SessionListener implements HttpSessionListener, HttpSessionAttribut
     private static Map<Integer, HttpSession> userSessionMap=new ConcurrentHashMap<>();
 
     private static SimpleLog log=SimpleLog.log(SessionListener.class);
+
+    public static boolean checkUserOnline(DetailedSysUser detailedSysUser) {
+        if(detailedSysUser==null||detailedSysUser.getId()==null)
+            return false;
+        return userSessionMap.containsKey(detailedSysUser.getId());
+    }
 
     @Override
     public void sessionCreated(HttpSessionEvent httpSessionEvent) {
@@ -68,10 +75,16 @@ public class SessionListener implements HttpSessionListener, HttpSessionAttribut
 
     }
 
-    public static void exitUser(Integer userId){
+    public static boolean exitUser(Integer userId){
         if(userSessionMap.containsKey(userId)){
             log.v("移除用户登录状态:"+userId);
             userSessionMap.get(userId).invalidate();
+            return true;
         }
+        return false;
+    }
+
+    public static Map<Integer, HttpSession> getUserSessionMap() {
+        return userSessionMap;
     }
 }

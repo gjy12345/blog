@@ -1,5 +1,6 @@
 package cn.gjy.blog.service.impl;
 
+import cn.gjy.blog.common.ContentString;
 import cn.gjy.blog.dao.BlogDao;
 import cn.gjy.blog.dao.CommonDao;
 import cn.gjy.blog.dao.UserDao;
@@ -37,8 +38,8 @@ public class UserServiceImpl implements UserService{
     private CommonDao commonDao;
 
     @Override
-    public MenuModel getUserMenuData() {
-        List<MenuModel.MenuData> menuDataList=userDao.selectUserMenuData();
+    public MenuModel getUserMenuData(Integer userType) {
+        List<MenuModel.MenuData> menuDataList=userDao.selectUserMenuData(userType);
         List<MenuModel.MenuData> parentMenu=menuDataList.stream().filter(menuData -> menuData.getParentId()==null)
                 .collect(Collectors.toList());
         parentMenu.forEach(menuData -> {
@@ -54,7 +55,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public CheckResult<SysUser> loginUser(SysUser sysUser) {
+    public CheckResult<SysUser> loginUser(SysUser sysUser,Integer userType) {
         if(sysUser.getUsername().trim().isEmpty()){
             return CheckResult.createFailResult("账号为空");
         }else if(sysUser.getPassword().trim().isEmpty()){
@@ -63,11 +64,13 @@ public class UserServiceImpl implements UserService{
             return CheckResult.createFailResult("账号过长");
         else if(sysUser.getPassword().length()>30)
             return CheckResult.createFailResult("密码过长");
-        SysUser dbUser=userDao.selectUserByUsername(sysUser.getUsername(),SysUser.USER);
+        SysUser dbUser=userDao.selectUserByUsername(sysUser.getUsername(),userType);
         if(dbUser==null)
             return CheckResult.createFailResult("账号不存在!");
         if(!Md5Utils.md5(sysUser.getPassword()).equals(dbUser.getPassword())){
             return CheckResult.createFailResult("密码错误!");
+        }else if(ContentString.LOCK.equals(dbUser.getLock())){
+            return CheckResult.createFailResult("该账号已被锁定!");
         }
         userDao.updateUserLastLogin(HttpRequestUtil.getRemoteIp(),
                 TimeUtils.getSimpleDateFormat().format(System.currentTimeMillis()),
@@ -98,12 +101,18 @@ public class UserServiceImpl implements UserService{
         if(StringUtils.isEmptyString(uploadUser.getPassword())){
             return CheckResult.createFailResult("密码为空");
         }
+        if(uploadUser.getSex()==null||(uploadUser.getSex()!=0&&uploadUser.getSex()!=1)){
+            return CheckResult.createFailResult("性别错误");
+        }
         if(StringUtils.isEmptyString(uploadUser.getFace())){
             uploadUser.setFace(null);
         }else
             uploadUser.setFace(XssTool.encode(uploadUser.getFace().trim()));
         if(uploadUser.getSign()!=null&&uploadUser.getSign().trim().length()>50){
             return CheckResult.createFailResult("签名过长!");
+        }
+        if(uploadUser.getFace()==null){
+            uploadUser.setFace(user.getFace());
         }
         if(uploadUser.getSign()!=null)
             uploadUser.setSign(XssTool.encode(uploadUser.getSign().trim()));
@@ -124,7 +133,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public SysUser getUserInfo(Integer userId) {
-        return userDao.selectUserById(userId);
+        return userDao.selectUserById(userId,SysUser.USER);
     }
 
     @Override
@@ -143,6 +152,11 @@ public class UserServiceImpl implements UserService{
     @Override
     public boolean getUserFollow(Integer see, Integer beSee) {
         return userDao.checkFollow(see,beSee)==1;
+    }
+
+    @Override
+    public SysUser getTestAdminUser() {
+        return userDao.selectUserByUsername("admin",SysUser.ADMIN);
     }
 
 }

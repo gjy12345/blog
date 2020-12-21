@@ -87,5 +87,9 @@ public class SysOperation {
         public static final int ADD_NEW_CATEGORY=8;
         public static final int UPDATE_USER_INFO = 9;
         public static final int UPDATE_BLOG = 10;
+        public static final int ADD_NEW_USER = 11;
+        public static final int EDIT_NEW_USER = 12;
+        public static final int LOCK_BLOG = 13;
+        public static final int UNLOCK_BLOG = 14;
     }
 }

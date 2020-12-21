@@ -28,6 +28,15 @@ public class SysUser {
     @Alias("create_time")
     private String createTime;
     private Integer blogCount;
+    private Integer sex;
+
+    public Integer getSex() {
+        return sex;
+    }
+
+    public void setSex(Integer sex) {
+        this.sex = sex;
+    }
 
     public Integer getBlogCount() {
         return blogCount;

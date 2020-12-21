@@ -17,7 +17,6 @@
 <body>
 <div class="weadmin-body">
     <div class="weadmin-block  layui-form">
-        <button class="layui-btn " onclick="addBlog()"><i class="layui-icon">&#xe654;</i>写博客</button>
         <div class=" layui-inline">
             <label class="layui-form-label" style="width: auto">公开性:</label>
             <div class="layui-input-block">
@@ -57,13 +56,14 @@
             <thead>
             <tr>
                 <th>序号</th>
+                <th>账号</th>
+                <th>昵称</th>
                 <th>文章名</th>
-                <th>分类</th>
                 <th>状态</th>
+                <th>分类</th>
                 <th>关键词</th>
                 <th>开放性</th>
                 <th>访问量</th>
-                <th>点赞数</th>
                 <th>评论数</th>
                 <th>评论开关</th>
                 <th>创建时间</th>
@@ -82,6 +82,7 @@
     </div>
 </div>
 <script src="${pageContext.request.contextPath}/static/weadmin/lib/layui/layui.all.js" charset="utf-8"></script>
+<script src="${pageContext.request.contextPath}/static/js/customer.js"></script>
 <%--<script src="${pageContext.request.contextPath}/static/weadmin/lib/layui/layui.js" charset="utf-8"></script>--%>
 <script type="text/javascript">
     let laypage;
@@ -121,7 +122,7 @@
         let name=$("#name").val();
         let status=$("#pub_level").val();
         let type=$("#type").val();
-        let url = '${pageContext.request.contextPath}/user/manage/article/list?page=' + page
+        let url = '${pageContext.request.contextPath}/admin/blog/list?page=' + page
         +'&title='+name;
         if(status!==''&&status.length!==0){
             url=url+'&publicityLevel='+status;
@@ -149,27 +150,27 @@
         let tbody = $("#tbody");
         let len = data.length;
         let html = '';
+        let keyword=$("#name").val().trim();
         for (let i = 0; i < len; i++) {
             html=html+
                 '<tr id="line'+(i+1)+'"><th>'+((page-1)*10 + i+1)+'</th>' +
-                '<td id="name'+(i+1)+'">'+data[i].title+'</td>' +
+                '<td>'+data[i].loginUsername+'</td>'+
+                '<td>'+data[i].userName +'</td>'+
+                '<td id="name'+(i+1)+'">'+replaceHeightLight(data[i].title,keyword)+'</td>' +
+                '<td>'+setStatusType(data[i])+'</td>' +
                 '<td>'+data[i].typeName+'</td>' +
-                '<td>'+(setStatusType(data[i]))+'</td>'+
                 '<td>'+data[i].keywords+'</td>' +
                 '<td>'+setPubFiled(data[i].pubLevelName,data[i].password)+'</td>' +
                 '<td>'+data[i].visit+'</td>' +
-                '<td>'+data[i].up+'</td>' +
                 '<td>'+data[i].common+'</td>' +
-                '<td id="state' + (i + 1) + '"><span class="layui-btn  layui-btn-xs ' +
-                (data[i].comment == 0 ? 'layui-btn-danger' : 'layui-btn-normal')
-                + '">' + (data[i].comment == 0 ? '关闭' : '开启')
-                + '</span></td>'+
+                '<td id="state' + (i + 1) + '">'+(data[i].comment == 0 ? '关闭' : '开启')+'</td>'+
                 '<td>'+data[i].createTime+'</td>' +
                 '<td>'+data[i].updateTime+'</td>' +
                 '<td>'+
                 '<button class="layui-btn layui-btn-sm layui-btn-normal" onclick="lookBlog(\''+data[i].url+'\')">查看</button>'
                 +
-                '<button class="layui-btn layui-btn-sm" onclick="showEdit(' + data[i].id + ')">编辑</button> ' +
+                (data[i].status===3?'<button class="layui-btn layui-btn-sm " onclick="lockBlog(' + data[i].id + ','+data[i].status+')">解锁</button> ':
+                    '<button class="layui-btn layui-btn-sm layui-btn-warm" onclick="lockBlog(' + data[i].id + ','+data[i].status+')">锁定</button> ') +
                 '<button class="layui-btn layui-btn-sm layui-btn-danger"' +
                 ' onclick="deleteBlog(' + data[i].id + ',' + (i + 1) + ')">删除</button>'
                 +
@@ -200,7 +201,7 @@
         let name = $("#name" + row_index).text();
         layer.confirm('是否确认删除博客:' + name + "?", function (index) {
             $.ajax({
-                url: '${pageContext.request.contextPath}/user/manage/article/delete',
+                url: '${pageContext.request.contextPath}/admin/blog/delete',
                 type: 'post',
                 data: {id: id},
                 success: function (data) {
@@ -220,31 +221,44 @@
         });
     }
 
-    function showEdit(id) {
-        let w=$(window).width()*0.8;
-        let h=$(window).height()*0.9;
-        layer.open({
-            type:2,
-            title: '修改博客',
-            maxmin : true,
-            area:[w+'px', h+'px'],
-            content: "${pageContext.request.contextPath}/user/manage/article/edit?id="+id,
-            end: function () {
-                //刷新本页
-                initData(currentPage);
-            }
-        });
-    }
-
-    function addBlog(){
-        let w=$(window).width()*0.8;
-        let h=$(window).height()*0.9;
-        layer.open({
-            type:2,
-            title: '写博客',
-            maxmin : true,
-            area:[w+'px', h+'px'],
-            content: "${pageContext.request.contextPath}/user/manage/article/new"
+    function lockBlog(id,status) {
+        if(status===4){
+            layer.msg('无法锁定处于回收站的文章!');
+            return
+        }
+        let message;
+        let lock;
+        if(status===1){
+            message="是否确认锁定博客?锁定后将无法被除作者外的用户查看";
+            lock=3;
+        }
+        else if(status===3){
+            message="是否确认解锁博客?";
+            lock=1;
+        }
+        else{
+            layer.msg('未知状态')
+            return
+        }
+        layer.confirm(message, function (index) {
+            $.ajax({
+                url: '${pageContext.request.contextPath}/admin/blog/lockOrUnlock',
+                type: 'post',
+                data: {id: id,changeStatus:lock},
+                success: function (data) {
+                    if (data.result === 1) {
+                        layer.msg('操作成功');
+                        initData(currentPage);
+                    } else {
+                        layer.msg(data.msg);
+                    }
+                    layer.close(index);
+                },
+                error: function (data) {
+                    layer.msg('发生了错误!');
+                    layer.close(index);
+                }
+            })
         });
     }
 
@@ -257,7 +271,6 @@
             return "<span style='color: red'>回收站</span>"
         }
     }
-
 </script>
 </body>
 

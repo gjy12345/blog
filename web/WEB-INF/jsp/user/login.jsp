@@ -14,7 +14,7 @@ To change this template use File | Settings | File Templates.
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="">
   <meta name="author" content="">
-  <title>admin-login</title>
+  <title>user-login</title>
 
   <!-- Bootstrap core CSS -->
   <link href="${pageContext.request.contextPath}/static/css/bootstrap.css" rel="stylesheet">
@@ -32,7 +32,7 @@ To change this template use File | Settings | File Templates.
 </head>
 
 <body class="text-center">
-<form class="form-signin" action="${pageContext.request.contextPath}/user/login" method="post">
+<form class="form-signin" action="${pageContext.request.contextPath}/user/manage/login" method="post">
   <h1 style="margin-bottom: 50px">Blog Login</h1>
   <div class="mb-2">
     <input type="text" id="inputUsername" value="${username}" name="username" class="form-control" placeholder="账号" required autofocus>

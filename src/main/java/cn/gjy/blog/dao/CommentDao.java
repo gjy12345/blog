@@ -50,4 +50,7 @@ public interface CommentDao {
             "where article_id in (SELECT id from article where user_id=#{userId})\n" +
             "order by `comment`.id desc limit 0,5;\n")
     List<Comment> selectUserRecentComments(@BindParam("userId")Integer id);
+
+    @Delete("delete from comment where user_id=#{id}")
+    int deleteCommentByUserId(@BindParam("id") Integer id);
 }

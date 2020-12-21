@@ -27,6 +27,7 @@ public class ErrorHandleImpl implements ErrorHandle {
         request.setAttribute(ContentString.CHILD_JSP,FrameworkConfig.getJspPath("500"));
         request.setAttribute("blogConfig", blogConfig);
         request.getRequestDispatcher(FrameworkConfig.getJspPath("base")).forward(request,response);
+        e.printStackTrace();
     }
 
     @Override

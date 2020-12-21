@@ -1,4 +1,4 @@
-package cn.gjy.blog.dao.method;
+package cn.gjy.blog.dao.method.admin;
 
 import cn.gjy.blog.framework.Invocation.CusMethodSql;
 import cn.gjy.blog.model.SysUser;
@@ -12,37 +12,25 @@ import java.util.Arrays;
  * @Class CommentMethodSql
  */
 @SuppressWarnings("all")
-public class CommentMethodSql {
+public class AdminCommentMethodSql {
 
     public static class CommentCountMethod implements CusMethodSql {
 
         @Override
         public SqlAndArgs handle(Object... data) {
-            SysUser user= (SysUser) data[0];
+            Integer userId= (Integer) data[0];
             String keyword= (String) data[1];
-            Integer showType= (Integer) data[2];
             StringBuilder sb=new StringBuilder("select count(*) from `comment`\n" +
-                    "where 1=1  ");
+                    "where 1=1 ");
             Object[] args=new Object[10];
             int index=0;
-            if(user!=null){
-                if(user.getId()!=null){
-                    sb.append(" and `comment`.article_id in (select id from article where article.user_id=?) ");
-                    args[index++]=user.getId();
-                }
-            }
             if(!StringUtils.isEmptyString(keyword)){
                 sb.append("and content like concat('%',?,'%') ");
                 args[index++]=keyword;
             }
-            if(showType!=null){
-                if(showType==0){
-                    sb.append("and comment.user_id=? ");
-                    args[index++]=user.getId();
-                }else if(showType==1){
-                    sb.append("and comment.user_id<>? ");
-                    args[index++]=user.getId();
-                }
+            if(userId!=null){
+                sb.append("and user_id=? ");
+                args[index++]=userId;
             }
             sb.append("order by id desc ");
             return SqlAndArgs.build(sb.toString(), Arrays.copyOf(args,index));
@@ -53,11 +41,10 @@ public class CommentMethodSql {
 
         @Override
         public SqlAndArgs handle(Object... data) {
-            SysUser user= (SysUser) data[0];
+            Integer userId= (Integer) data[0];
             String keyword= (String) data[1];
             Integer page= (Integer) data[2];
             Integer size= (Integer) data[3];
-            Integer showType= (Integer) data[4];
             StringBuilder sb=new StringBuilder("select comment.*,article.title as articleTitle" +
                     ",sys_user.nickname as userName,article.url as articleUrl from `comment` " +
                     "left join article on article.id=comment.article_id " +
@@ -65,24 +52,13 @@ public class CommentMethodSql {
                     "where 1=1 ");
             Object[] args=new Object[10];
             int index=0;
-            if(user!=null){
-                if(user.getId()!=null){
-                    sb.append(" and `comment`.article_id in (select id from article where article.user_id=?) ");
-                    args[index++]=user.getId();
-                }
-            }
             if(!StringUtils.isEmptyString(keyword)){
                 sb.append("and comment.content like concat('%',?,'%') ");
                 args[index++]=keyword;
             }
-            if(showType!=null){
-                if(showType==0){
-                    sb.append("and comment.user_id=? ");
-                    args[index++]=user.getId();
-                }else if(showType==1){
-                    sb.append("and comment.user_id<>? ");
-                    args[index++]=user.getId();
-                }
+            if(userId!=null){
+                sb.append("and comment.user_id=? ");
+                args[index++]=userId;
             }
             sb.append("order by comment.id desc limit ").append(page*10).append(", ").append(size);
             return SqlAndArgs.build(sb.toString(), Arrays.copyOf(args,index));

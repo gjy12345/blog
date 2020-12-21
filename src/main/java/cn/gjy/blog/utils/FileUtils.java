@@ -54,7 +54,7 @@ public class FileUtils {
             }else if(i==fileType.length-1)
                 return CheckResult.createFailResult("错误的上传格式");
         }
-        File saveFile=new File(saveDir, UUID.randomUUID().toString()+name);
+        File saveFile=new File(saveDir, UUID.randomUUID().toString());
         items.get(fileIndex).write(saveFile);
         return CheckResult.createSuccessResult(saveFile,"成功");
     }

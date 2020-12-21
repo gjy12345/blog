@@ -121,6 +121,9 @@ public interface BlogDao {
     @Select("select * from article where id=#{id} and status<>4")
     Article selectBlogById(@BindParam("id") Integer id);
 
+    @Select("select * from article where id=#{id}")
+    Article selectBlogByIdAllStatus(@BindParam("id") Integer id);
+
     @UseCustomMethod(value = CommentMethodSql.CommentCountMethod.class
             ,sqlType = DaoInvocationHandlerImpl.SqlType.SELECT)
     int getUserBlogCommentCount(SysUser user, String keyword,Integer showType);
@@ -162,4 +165,10 @@ public interface BlogDao {
             "order by b.common desc \n" +
             "limit 0,10")
     List<DetailedArticle> selectCommentRanking();
+
+    @Delete("delete from article where user_id=#{id}")
+    int deleteBlogByUserId(@BindParam("id") Integer id);
+
+    @Delete("delete from category where create_user=#{id}")
+    int deleteCategoryByUserId(@BindParam("id") Integer id);
 }

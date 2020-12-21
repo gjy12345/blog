@@ -20,6 +20,6 @@ public interface ArticleDao {
             "left join category " +
             "on category.id=article.type "+
             "left join sys_user " +
-            "on sys_user.id=article.user_id where publicity_level<>5 order by id desc  limit #{start},#{end}")
+            "on sys_user.id=article.user_id where publicity_level<>5 and article.status=1 order by id desc  limit #{start},#{end}")
     List<DetailedArticle> selectRecentBlog(@BindParam("start") int start, @BindParam("end") int end);
 }

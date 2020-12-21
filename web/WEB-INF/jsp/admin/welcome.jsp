@@ -26,7 +26,7 @@ To change this template use File | Settings | File Templates.
 	<body>
 		<div class="weadmin-body">
 			<blockquote class="layui-elem-quote">
-				${nowTime},亲爱的${USER_SESSION_TAG.nickname}.</blockquote>
+				${nowTime},亲爱的${ADMIN_SESSION_TAG.nickname}.</blockquote>
 			<div class="layui-fluid" style="overflow: hidden;">
 				<div class="layui-row layui-col-space15">
 					<div class="layui-col-md8">
@@ -38,30 +38,30 @@ To change this template use File | Settings | File Templates.
 										<ul class="layui-row layui-col-space10 layui-this">
 											<li class="layui-col-xs3">
 												<a href="javascript:void(0)">
-													<i class="layui-icon">${blogCount}</i>
-													<cite>博客数量</cite>
+													<i class="layui-icon">${userCount}</i>
+													<cite>总用户数</cite>
 												</a>
 											</li>
 											<li class="layui-col-xs3">
 												<a href="javascript:void(0)">
 													<i class="layui-icon">
-														${allComment}
+														${blogCount}
 													</i>
-													<cite>评论</cite>
+													<cite>总博客数</cite>
 												</a>
 											</li>
 											<li class="layui-col-xs3">
 												<a href="javascript:void(0)">
-													<i class="layui-icon">${allVisit}
+													<i class="layui-icon">${commentCount}
 													</i>
-													<cite>阅读量</cite>
+													<cite>总评论数</cite>
 												</a>
 											</li>
 											<li class="layui-col-xs3">
 												<a href="javascript:void(0)">
-													<i class="layui-icon">${createDays}天
+													<i class="layui-icon">${online}
 													</i>
-													<cite>已创作</cite>
+													<cite>在线用户</cite>
 												</a>
 											</li>
 											
@@ -85,27 +85,27 @@ To change this template use File | Settings | File Templates.
 									<div class="d-flex gutter-condensed ">
 										<div class="col-lg-3 " style="max-width: 80px">
 											<c:choose>
-												<c:when test="${USER_SESSION_TAG.face!=null}"><img class="avatar avatar-user" style="height: auto" src="${USER_SESSION_TAG.face}" width="100%" height="100%" alt="avatar image"></c:when>
-												<c:when test="${USER_SESSION_TAG.face==null}"><img class="avatar avatar-user" style="height: auto" src="${pageContext.request.contextPath}/static/img/face.png" width="100%" height="100%" alt="avatar image"></c:when>
+												<c:when test="${ADMIN_SESSION_TAG.face!=null}"><img class="avatar avatar-user" style="height: auto" src="${USER_SESSION_TAG.face}" width="100%" height="100%" alt="avatar image"></c:when>
+												<c:when test="${ADMIN_SESSION_TAG.face==null}"><img class="avatar avatar-user" style="height: auto" src="${pageContext.request.contextPath}/static/img/face.png" width="100%" height="100%" alt="avatar image"></c:when>
 											</c:choose>
 										</div>
 										<div class="col-lg-9">
 											<div class="f4 text-bold lh-condensed mb-2" style="min-height: 100px">
 												<div style="color: #0366d6;font-size: 16px">
-													${USER_SESSION_TAG.nickname}
+													${ADMIN_SESSION_TAG.nickname}
 												</div>
 												<span class="d-block text-normal text-gray">
-													${USER_SESSION_TAG.sign}
+													${ADMIN_SESSION_TAG.sign}
 												</span>
 											</div>
 										</div>
 									</div>
-									<div class="">
-										<div class="col-md-5">
-											登录ip: <a href="javascript:void(0)">${USER_SESSION_TAG.lastLoginIp}</a>
+									<div class="col-md-12">
+										<div class="col-md-4">
+											登录ip: <a href="javascript:void(0)">${ADMIN_SESSION_TAG.lastLoginIp}</a>
 										</div>
-										<div class="col-md-7">
-											登录时间: <a href="javascript:void(0)">${USER_SESSION_TAG.lastLoginTime}</a>
+										<div class="col-md-8">
+											登录时间: <a href="javascript:void(0)">${ADMIN_SESSION_TAG.lastLoginTime}</a>
 										</div>
 									</div>
 								</article>
@@ -120,78 +120,15 @@ To change this template use File | Settings | File Templates.
 					
 					<!--统计信息展示-->
 					<fieldset class="layui-elem-field" style="padding: 5px;">
-						<!--WeAdmin公告-->
-						<div class="layui-card">
-							<div class="layui-card-header layui-elem-quote" style="min-height: 50px">公告 <a href="#">更多</a></div>
-							<div class="layui-card-body">
-								<div class="layui-carousel weadmin-notice" lay-filter="notice" lay-indicator="inside" lay-arrow="none" style="width: 100%; height: 280px;">
-									<div carousel-item="">
-										<div class="">
-											<a href="https://gitee.com/lovetime/WeAdmin" target="_blank" class="layui-bg-red">新的风暴已经出现</a>
-										</div>
-										<div class="">
-											<a href="http://www.layui.com/admin/" target="_blank" class="layui-bg-blue">怎么能够停滞不前</a>
-										</div>
-
-									</div>
-									<div class="layui-carousel-ind">
-										<ul>
-											<li class="layui-this"></li>
-											<li></li>
-										</ul>
-									</div>
-									<!--<button class="layui-icon layui-carousel-arrow" lay-type="sub"></button>
-									<button class="layui-icon layui-carousel-arrow" lay-type="add"></button>-->
-								</div>
-
-							</div>
-						</div>
 						<!--<legend>信息统计</legend>-->
-						<blockquote class="layui-elem-quote font16">最新博客</blockquote>
+						<blockquote class="layui-elem-quote font16">系统信息</blockquote>
 						<div class="col-md-12">
 							<div class="col-md-12">
-								<c:forEach items="${recentBlogs}" var="blog" varStatus="s">
-									<div class="entry-content clearfix table-bordered" style="padding-bottom: 10px;padding-top: 10px;">
-										<div class="entry-title col-md-9 font16" >
-											<a href="${pageContext.request.contextPath}/article/detail?url=${blog.url}" target="_blank">
-													<c:choose>
-														<c:when test="${blog.publicityLevel==7}">
-															[全部可见]
-														</c:when>
-														<c:when test="${blog.publicityLevel==5}">
-															[仅我可见]
-														</c:when>
-														<c:when test="${blog.publicityLevel==6}">
-															[需要密码]
-														</c:when>
-													</c:choose>
-												[博客] ${blog.title}
-											</a>
-										</div>
-										<div class="col-md-3">
-												${blog.createTime}
-										</div>
-									</div>
-								</c:forEach>
+
 							</div>
 						</div>
 					</fieldset>
-					<blockquote class="layui-elem-quote font16">最新评论</blockquote>
-					<div class="col-md-12" style="min-height: 300px">
-						<div class="col-md-12">
-							<c:forEach items="${recentComments}" var="comment">
-								<div class="entry-content clearfix table-bordered" style="padding-bottom: 10px;padding-top: 10px;">
-									<div class="entry-title col-md-9 font16" >
-										<a href="single.html"></a>[评论] <a href="">${comment.userName}</a>: ${comment.content}&emsp;
-										<a href="${pageContext.request.contextPath}/article/detail?url=${comment.articleUrl}" target="_blank">[查看]</a>
-									</div>
-									<div class="col-md-3">
-										${comment.commonTime}
-									</div>
-								</div>
-							</c:forEach>
-						</div>
-					</div>
+
 				</div>
 				<div class="layui-col-lg6 layui-col-md12">
 					<fieldset class="layui-elem-field we-changelog" style="padding: 5px;">

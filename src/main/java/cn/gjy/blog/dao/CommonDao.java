@@ -1,9 +1,6 @@
 package cn.gjy.blog.dao;
 
-import cn.gjy.blog.framework.annotation.BindParam;
-import cn.gjy.blog.framework.annotation.Dao;
-import cn.gjy.blog.framework.annotation.Insert;
-import cn.gjy.blog.framework.annotation.Select;
+import cn.gjy.blog.framework.annotation.*;
 import cn.gjy.blog.model.SysOperation;
 
 import java.util.List;
@@ -26,4 +23,7 @@ public interface CommonDao {
     int insertLog(@BindParam("userId") Integer id, @BindParam("operation_type") int operationType,
                   @BindParam("operation") String operation,@BindParam("createTime") String createTime,
                   @BindParam("ip") String ip,@BindParam("client") String client);
+
+    @Delete("delete from sys_operation where user_id=#{id}")
+    int deleteOperationByUserId(@BindParam("id") Integer id);
 }

@@ -13,6 +13,15 @@ public class DetailedArticle extends Article{
     private Integer up;//点赞数
     private String userName;
     private String face;//头像
+    private String loginUsername;
+
+    public String getLoginUsername() {
+        return loginUsername;
+    }
+
+    public void setLoginUsername(String loginUsername) {
+        this.loginUsername = loginUsername;
+    }
 
     public String getFace() {
         return face;

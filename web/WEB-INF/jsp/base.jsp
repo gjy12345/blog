@@ -52,7 +52,12 @@ To change this template use File | Settings | File Templates.
                             <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/">探索</a></li>
                             <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/user/follow">关注</a></li>
                             <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/article/ranking">排行</a></li>
-                            <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/user/manage/">我的</a></li>
+                            <c:if test="${ADMIN_SESSION_TAG!=null}">
+                                <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/admin/">管理</a></li>
+                            </c:if>
+                            <c:if test="${ADMIN_SESSION_TAG==null}">
+                                <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/user/manage/">我的</a></li>
+                            </c:if>
                         </ul>
                     </div><!-- /.navbar-collapse -->
                 </nav>
@@ -90,6 +95,12 @@ To change this template use File | Settings | File Templates.
             <li><a href="${pageContext.request.contextPath}/user/follow">关注</a></li>
             <li><a href="${pageContext.request.contextPath}/article/ranking">排行</a></li>
             <li><a href="${pageContext.request.contextPath}/user/manage/">我的</a></li>
+            <c:if test="${ADMIN_SESSION_TAG!=null}">
+                <li><a href="${pageContext.request.contextPath}/admin/">管理</a></li>
+            </c:if>
+            <c:if test="${ADMIN_SESSION_TAG==null}">
+                <li><a href="${pageContext.request.contextPath}/user/manage/">我的</a></li>
+            </c:if>
         </ul>
     </nav>
 </div>

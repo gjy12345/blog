@@ -16,6 +16,7 @@ import cn.gjy.blog.framework.http.MethodParamBind;
 import cn.gjy.blog.framework.http.UrlMatchEngine;
 import cn.gjy.blog.framework.factory.impl.ObjectFactory;
 import cn.gjy.blog.framework.http.XssHttpServletRequest;
+import cn.gjy.blog.framework.listener.ApplicationLifeCycleListener;
 import cn.gjy.blog.framework.log.SimpleLog;
 import cn.gjy.blog.framework.model.MatchResult;
 import cn.gjy.blog.framework.tool.ClassTool;
@@ -32,6 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -137,6 +140,11 @@ public class MainServlet extends HttpServlet {
             log.v("init interceptor");
             this.interceptorFactory.init(interceptorObjects);
             this.objectFactory.initObjectParams();
+            //回调生命周期函数
+            this.objectFactory.getObjectMap().keySet()
+                    .parallelStream().filter(ApplicationLifeCycleListener.class::isAssignableFrom)
+                    .forEach(aClass -> ((ApplicationLifeCycleListener)this.objectFactory.getObjectMap()
+                            .get(aClass)).onStart());
         } catch (Exception e) {
             e.printStackTrace();
             log.e("创建装配工厂失败:"+e.getMessage());
@@ -269,8 +277,9 @@ public class MainServlet extends HttpServlet {
                 if(!interceptorUrl(handles,req,resp, result.getMethod(), result.getO())){
                     return;
                 }
-                if(FrameworkConfig.xssFilter){
+                if(FrameworkConfig.xssFilter&&result.getMethod().getAnnotation(XssFilter.class)!=null){
                     //对参数进行xss转义
+                    log.v("xss过滤====>"+url);
                     req=new XssHttpServletRequest(req);
                 }
                 HttpRequestUtil.setRequest(req);
@@ -352,6 +361,9 @@ public class MainServlet extends HttpServlet {
     @Override
     public void destroy() {
         super.destroy();
+        this.objectFactory.getObjectMap().keySet()
+                .parallelStream().filter(ApplicationLifeCycleListener.class::isAssignableFrom)
+                .forEach(aClass -> ((ApplicationLifeCycleListener)this.objectFactory.getObjectMap().get(aClass)).onDestroy());
         if(this.queueDataSource!=null){
             log.v("关闭所有数据库连接");
             this.queueDataSource.close();

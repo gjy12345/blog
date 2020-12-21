@@ -30,27 +30,27 @@ public class UserInterceptor implements Interceptor {
     @Override
     public String registerPatten() {
 //        return "/user/.+?";
-        return "/user/manage/.*?";
+        return "/user/manage/.+?";
     }
 
     @Override
     public String registerExcludePatten() {
-//        return ""/user/manage/login"";
-        return "";
+        return "/user/manage/login";
+//        return "";
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Method method, Object methodObject) throws Exception {
         if(request.getSession().getAttribute(ContentString.USER_SESSION_TAG) != null)
             return true;
-        //测试用
-        //添加重定向地址到session
-        SysUser sysUser=userService.getTestUser();
-        System.out.println(sysUser);
-        request.getSession().setAttribute(ContentString.USER_SESSION_TAG,sysUser);
-        return true;
-//        response.sendRedirect(request.getContextPath()+"/user/");
-//        return false;
+//        //测试用
+//        //添加重定向地址到session
+//        SysUser sysUser=userService.getTestUser();
+//        System.out.println(sysUser);
+//        request.getSession().setAttribute(ContentString.USER_SESSION_TAG,sysUser);
+//        return true;
+        response.sendRedirect(request.getContextPath()+"/user/manage/");
+        return false;
     }
 
     @Override
