@@ -68,7 +68,7 @@ public class AdminController {
         }
         //登录成功
         session.setAttribute(ContentString.ADMIN_SESSION_TAG,loginResult.getData());
-        return "admin/dashboard";
+        return "redirect:"+ FrameworkConfig.contentPath+ "/admin/dashboard";
     }
 
     @Route(value = "/dashboard",method = {Route.HttpMethod.GET})
@@ -80,7 +80,7 @@ public class AdminController {
     @Route(value = "/exit")
     public String exitLogin(HttpSession session){
         session.invalidate();
-        return "admin/index";
+        return "redirect:"+ FrameworkConfig.contentPath+ "/admin/";
     }
 
     @ResponseBody

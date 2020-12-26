@@ -22,7 +22,7 @@ public class AdminInterceptor implements Interceptor {
     private UserService userService;
     @Override
     public String registerPatten() {
-        return "/admin/.*?";
+        return "/admin/.+?";
     }
 
     @Override
@@ -35,10 +35,10 @@ public class AdminInterceptor implements Interceptor {
         if(request.getSession().getAttribute(ContentString.ADMIN_SESSION_TAG) != null){
             return true;
         }
-//        response.sendRedirect("redirect:"+request.getContextPath()+"/admin/");
-//        return false;
-        request.getSession().setAttribute(ContentString.ADMIN_SESSION_TAG,userService.getTestAdminUser());
-        return true;
+        response.sendRedirect(request.getContextPath()+"/admin/");
+        return false;
+//        request.getSession().setAttribute(ContentString.ADMIN_SESSION_TAG,userService.getTestAdminUser());
+//        return true;
     }
 
     @Override
