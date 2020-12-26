@@ -10,6 +10,7 @@ import cn.gjy.blog.service.AdminService;
 import cn.gjy.blog.service.CommentService;
 import cn.gjy.blog.service.CommonService;
 import cn.gjy.blog.service.UserService;
+import cn.gjy.blog.system.SystemInfoRunnable;
 import cn.gjy.blog.utils.TimeUtils;
 
 import javax.servlet.http.HttpSession;
@@ -37,6 +38,9 @@ public class AdminController {
 
     @InitObject
     private CommonService commonService;
+
+    @InitObject
+    private SystemInfoRunnable systemInfoRunnable;
 
     @Route("/")
     public String index(@BindParam(value = ContentString.ADMIN_SESSION_TAG,from = HttpSession.class) SysUser sysUser){
@@ -94,6 +98,8 @@ public class AdminController {
         model.setAttribute("blogCount",adminService.getBlogCount());
         model.setAttribute("commentCount",adminService.getCommentCount());
         model.setAttribute("online", SessionListener.getUserSessionMap().size());
+        model.setAttribute("systemInfos",systemInfoRunnable.getSystemInfos());
+        model.setAttribute("operations",commonService.getUserOperations(user,10));
         return "admin/welcome";
     }
 
@@ -122,7 +128,7 @@ public class AdminController {
     }
 
     @Route("/user/edit")
-    public String toEditUser(Model model,@BindParam("userId") Integer userId){
+    public String toEditUser(Model model,@BindParam(value = "userId",required = true) Integer userId){
         model.setAttribute("user",adminService.getUserById(userId));
         return "admin/edit_user";
     }
@@ -135,7 +141,7 @@ public class AdminController {
 
     @ResponseBody
     @Route(value = "/user/delete",method = Route.HttpMethod.POST)
-    public CheckResult<Void> deleteUser(@BindParam("id") Integer id){
+    public CheckResult<Void> deleteUser(@BindParam(value = "id",required = true) Integer id){
         return adminService.deleteUserById(id);
     }
 
@@ -153,20 +159,20 @@ public class AdminController {
 
     @ResponseBody
     @Route(value = "/blog/delete",method = Route.HttpMethod.POST)
-    public CheckResult<Void> deleteBlog(@BindParam("id") Integer id){
+    public CheckResult<Void> deleteBlog(@BindParam(value = "id",required = true) Integer id){
         return adminService.deleteBlogById(id);
     }
 
     @Route(value = "/blog/lockOrUnlock",method = Route.HttpMethod.POST)
     @ResponseBody
-    public CheckResult<Void> lockOrUnlockBlog(@BindParam("changeStatus") Integer changeStatus,
-                                              @BindParam("id") Integer id){
+    public CheckResult<Void> lockOrUnlockBlog(@BindParam(value = "changeStatus",required = true) Integer changeStatus,
+                                              @BindParam(value = "id",required = true) Integer id){
         return adminService.lockOrUnlockBlog(id,changeStatus);
     }
 
     @ResponseBody
     @Route(value = "/user/exitLogin",method = Route.HttpMethod.POST)
-    public CheckResult<Void> exitUser(@BindParam("id") Integer id){
+    public CheckResult<Void> exitUser(@BindParam(value = "id",required = true) Integer id){
         return SessionListener.exitUser(id)?CheckResult.createSuccessResult(null,"退出成功"):
                 CheckResult.createFailResult("退出失败");
     }
@@ -186,7 +192,67 @@ public class AdminController {
 
     @Route(value = "/comment/delete",method = Route.HttpMethod.POST)
     @ResponseBody
-    public CheckResult<Void> deleteComment(@BindParam("id") Integer id){
+    public CheckResult<Void> deleteComment(@BindParam(value = "id",required = true) Integer id){
         return adminService.deleteCommentById(id);
     }
+
+    @Route("/notice/list")
+    public String notice(){
+        return "admin/notice";
+    }
+
+    @ResponseBody
+    @Route(value = "/notice/list",method = Route.HttpMethod.POST)
+    public TableData<List<SysNotice>> noticeList(@BindParam("page") Integer page,
+                                            @BindParam("keyword") String keyword){
+        return adminService.getNoticeList(page,keyword);
+    }
+
+    @Route("/notice/add")
+    public String toAddNotice(){
+        return "admin/add_notice";
+    }
+
+    @ResponseBody
+    @Route(value = "/notice/add",method = Route.HttpMethod.POST)
+    public CheckResult<Void> addNotice(@JsonRequestBody SysNotice notice){
+        return adminService.addNewNotice(notice);
+    }
+
+    @Route("/notice/edit")
+    public String toEditNotice(@BindParam(value = "id",required = true) Integer id,Model model){
+        model.setAttribute("notice",adminService.getNoticeById(id));
+        return "admin/edit_notice";
+    }
+
+    @ResponseBody
+    @Route(value = "/notice/edit",method = Route.HttpMethod.POST)
+    public CheckResult<Void> editNotice(@JsonRequestBody SysNotice notice){
+        return adminService.editNotice(notice);
+    }
+
+    @ResponseBody
+    @Route(value = "/notice/delete",method = Route.HttpMethod.POST)
+    public CheckResult<Void> deleteNotice(@BindParam(value = "id",required = true) Integer id){
+        return adminService.deleteNotice(id);
+    }
+
+    @ResponseBody
+    @Route(value = "/notice/show",method = Route.HttpMethod.POST)
+    public CheckResult<Void> changeNoticeShowStatus(@BindParam(value = "id",required = true) Integer id
+            ,@BindParam(value = "show",required = true) Integer show){
+        return adminService.changeNoticeShowStatus(id,show);
+    }
+
+    @Route("/editSelf")
+    public String editAdminInfo(){
+        return "admin/edit_user_info";
+    }
+
+    @ResponseBody
+    @Route(value = "/editSelf",method = Route.HttpMethod.POST)
+    public CheckResult<Void> editUserInfo(@JsonRequestBody SysUser uploadUser){
+        return adminService.editAdminInfo(uploadUser);
+    }
+
 }

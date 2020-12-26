@@ -277,13 +277,16 @@ public class MainServlet extends HttpServlet {
                 if(!interceptorUrl(handles,req,resp, result.getMethod(), result.getO())){
                     return;
                 }
-                if(FrameworkConfig.xssFilter&&result.getMethod().getAnnotation(XssFilter.class)!=null){
+                boolean xss=false;
+                if(FrameworkConfig.xssFilter&&(result.getMethod().getAnnotation(XssFilter.class)!=null||
+                        result.getO().getClass().getAnnotation(XssFilter.class)!=null)){
                     //对参数进行xss转义
                     log.v("xss过滤====>"+url);
                     req=new XssHttpServletRequest(req);
+                    xss=true;
                 }
                 HttpRequestUtil.setRequest(req);
-                Object[] objects = MethodParamBind.assignmentMethod(result.getMethod(), req, resp);
+                Object[] objects = MethodParamBind.assignmentMethod(result.getMethod(), req, resp,xss);
                 log.v(url+" "+method);
                 crossDomain(result,resp);
                 Object returnData=result.getMethod().invoke(result.getO(),objects);

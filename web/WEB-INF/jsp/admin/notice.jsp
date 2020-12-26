@@ -4,7 +4,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>用户列表</title>
+    <title>公告管理</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport"
@@ -17,31 +17,11 @@
 <body>
 <div class="weadmin-body">
     <div class="weadmin-block  layui-form">
-        <button class="layui-btn " onclick="addUser()"><i class="layui-icon">&#xe654;</i>新建用户</button>
-        <div class=" layui-inline">
-            <label class="layui-form-label" style="width: auto">性别:</label>
-            <div class="layui-input-block">
-                <select id="sex">
-                    <option value=""></option>
-                    <option value="0">男</option>
-                    <option value="1">女</option>
-                </select>
-            </div>
-        </div>
-        <div class="layui-inline">
-            <label class="layui-form-label" style="width: auto">状态:</label>
-            <div class="layui-input-block">
-                <select id="status">
-                    <option value=""></option>
-                    <option value="1">锁定</option>
-                    <option value="0">未锁定</option>
-                </select>
-            </div>
-        </div>
+        <button class="layui-btn " onclick="addNotice()"><i class="layui-icon">&#xe654;</i>新建公告</button>
         <div class="layui-inline">
             <label class="layui-form-label layui-inline" style="width: auto">模糊搜索:</label>
             <div class="layui-input-block">
-                <input class="layui-input" placeholder="用户名或昵称" name="name" id="name">
+                <input class="layui-input" placeholder="公告标题" name="name" id="name">
             </div>
         </div>
         <button class="layui-btn" onclick="initData(1)"><i class="layui-icon">&#xe615;</i>搜索</button>
@@ -55,15 +35,10 @@
             <thead>
             <tr>
                 <th>序号</th>
-                <th>用户名</th>
-                <th>昵称</th>
-                <th>性别</th>
-                <th>状态</th>
-                <th>在线状态</th>
-                <th>上次发布</th>
-                <th>上次登录ip</th>
-                <th>上次登录时间</th>
-                <th>博客数量</th>
+                <th>公告标题</th>
+                <th>轮播展示</th>
+                <th>创建时间</th>
+                <th>更新时间</th>
                 <th>操作</th>
             </tr>
             </thead>
@@ -118,14 +93,8 @@
         let name=$("#name").val();
         let status=$("#status").val();
         let sex=$("#sex").val();
-        let url = '${pageContext.request.contextPath}/admin/user/list?page=' + page
+        let url = '${pageContext.request.contextPath}/admin/notice/list?page=' + page
         +'&keyword='+name;
-        if(status!==''&&status.length!==0){
-            url=url+'&lock='+status;
-        }
-        if(sex!==''&&sex.length!==0){
-            url=url+'&sex='+sex;
-        }
         $.ajax({
             url: url,
             type: 'post',
@@ -149,47 +118,33 @@
         let keyword=$("#name").val().trim();
         for (let i = 0; i < len; i++) {
             html=html+'<tr id="line'+(i+1)+'">' +
-                '<td>'+((page-1)*10+i+1)+'</td>' +
-                '<td id="name'+(i+1)+'">'+replaceHeightLight(data[i].username,keyword)+'</td>' +
-                '<td id="nickname'+(i+1)+'">'+replaceHeightLight(data[i].nickname,keyword)+'</td>' +
-                '<td>'+data[i].sexName+'</td>'+
-                '<td>'+(data[i].lock===0?'<span style="color: green">正常</span>':'<span style="color: red">锁定</span>')+'</td>' +
-                '<td>'+(
-                    data[i].online===true?'<span style="color: green">在线</span>':
-                        '<span style="color: orangered">不在线</span>'
-                )+'</td>' +
-                '<td>'+(
-                    data[i].lastRelease!==undefined?data[i].lastRelease:'未发布'
-                )+'</td>' +
-                '<td>'+(
-                    data[i].lastLoginIp!==undefined?data[i].lastLoginIp:'从未登录'
-                )+'</td>' +
-                '<td>'+(
-                    data[i].lastLoginTime!==undefined?data[i].lastLoginTime:'从未登录'
-                )+'</td>' +
-                '<td>'+data[i].blogCount+'</td>' +
-                '<td>'+
-                '<button class="layui-btn layui-btn-sm layui-btn-normal" onclick="showUser('+data[i].id+','+(i+1)+')">查看</button>'+
-                '<button class="layui-btn layui-btn-sm " onclick="editUser('+data[i].id+','+(i+1)+')">编辑</button>'+
-                '<button class="layui-btn layui-btn-sm layui-btn-danger" onclick="deleteUser('+data[i].id+','+(i+1)+')">删除</button>'+
-                (data[i].online===true?'<button class="layui-btn layui-btn-sm layui-btn-primary"' +
-                    ' onclick="exitUser('+data[i].id+','+(i+1)+')">下线</button>':'')+
-                '</td>' +
-                '</tr>';
+                '<th>'+((page-1)*10+i+1)+'</th>' +
+                '<th>'+replaceHeightLight(data[i].title,keyword)+'</th>' +
+                '<th>'+(data[i].show===1?'<span style="color: green">展示</span>':
+                    '<span style="color: red">未展示</span>')+'</th>'+
+                '<th>'+data[i].createTime+'</th>' +
+                '<th>'+(data[i].updateTime===undefined?'-':data[i].updateTime)+'</th>' +
+                '<th><div class="layui-btn-container">' +
+                '<button class="layui-btn layui-btn-sm layui-btn-normal"><a target="_blank" href="${pageContext.request.contextPath}/notice?id='+data[i].id+'" style="color: white">查看</a></button>' +
+                '<button class="layui-btn layui-btn-sm" onclick="editNotice('+data[i].id+')">编辑</button>' +
+                '<button class="layui-btn layui-btn-sm layui-btn-warm" onclick="show('+data[i].id+','+data[i].show+')">'+(data[i].show===0?'展示':'取消展示')+'</button>' +
+                '<button class="layui-btn layui-btn-sm layui-btn-danger" onclick="deleteNotice('+data[i].id+',\''+data[i].title+'\','+(i+1)+')">删除</button>' +
+                '</div></th>' +
+                '</tr>'
         }
         tbody.html(html);
 
     }
 
-    function addUser(){
-        let w=$(window).width()*0.4;
-        let h=$(window).height()*0.9;
+    function addNotice(){
+        let w=$(window).width()*0.8;
+        let h=$(window).height()*0.8;
         layer.open({
             type:2,
             title: '新增',
             maxmin : true,
             area:[w+'px', h+'px'],
-            content: "${pageContext.request.contextPath}/admin/user/add",
+            content: "${pageContext.request.contextPath}/admin/notice/add",
             end: function () {
                 //刷新本页
                 initData(currentPage);
@@ -197,15 +152,15 @@
         });
     }
 
-    function showUser(id,rowId){
+    function editNotice(id){
         let w=$(window).width()*0.8;
-        let h=$(window).height()*0.9;
+        let h=$(window).height()*0.8;
         layer.open({
             type:2,
-            title: '用户信息',
+            title: '修改',
             maxmin : true,
             area:[w+'px', h+'px'],
-            content: "${pageContext.request.contextPath}/user/info?userId="+id,
+            content: "${pageContext.request.contextPath}/admin/notice/edit?id="+id,
             end: function () {
                 //刷新本页
                 initData(currentPage);
@@ -213,28 +168,11 @@
         });
     }
 
-    function editUser(id,rowId){
-        let w=$(window).width()*0.8;
-        let h=$(window).height()*0.9;
-        layer.open({
-            type:2,
-            title: '修改用户信息',
-            maxmin : true,
-            area:[w+'px', h+'px'],
-            content: "${pageContext.request.contextPath}/admin/user/edit?userId="+id,
-            end: function () {
-                //刷新本页
-                initData(currentPage);
-            }
-        });
-    }
-
-    function deleteUser(id,rowId){
-        let line = $("#line" + rowId);
-        let name = $("#name" + rowId).text();
-        layer.confirm('是否确认删除用户:' + name + "?", function (index) {
+    function deleteNotice(id,name,rowIndex){
+        let line=$("#line"+rowIndex);
+        layer.confirm('是否确认删除公告:' + name + "?", function (index) {
             $.ajax({
-                url: '${pageContext.request.contextPath}/admin/user/delete',
+                url: '${pageContext.request.contextPath}/admin/notice/delete',
                 type: 'post',
                 data: {id: id},
                 success: function (data) {
@@ -254,29 +192,27 @@
         });
     }
 
-    function exitUser(id,rowId){
-        let name=$("#nickname"+rowId).text();
-        layer.confirm('是否确认强制用户: ' + name + " 下线?", function (index) {
-            $.ajax({
-                url: '${pageContext.request.contextPath}/admin/user/exitLogin',
-                type: 'post',
-                data: {id: id},
-                success: function (data) {
-                    if (data.result === 1) {
-                        layer.msg('退出成功');
-                        initData(currentPage);
-                    } else {
-                        layer.msg(data.msg);
-                    }
-                    layer.close(index);
-                },
-                error: function (data) {
-                    layer.msg('发生了错误!');
-                    layer.close(index);
+    function show(id,nowShow){
+        let show=nowShow===1?0:1;
+        $.ajax({
+            url: '${pageContext.request.contextPath}/admin/notice/show',
+            type: 'post',
+            data: {id: id,show:show},
+            success: function (data) {
+                if (data.result === 1) {
+                    layer.msg('设置成功');
+                    initData(currentPage);
+                } else {
+                    layer.msg(data.msg);
                 }
-            })
-        });
+                layer.close(index);
+            },
+            error: function (data) {
+                layer.msg('发生了错误!');
+            }
+        })
     }
+
 </script>
 </body>
 

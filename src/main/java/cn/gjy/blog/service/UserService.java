@@ -28,7 +28,9 @@ public interface UserService {
 
     TableData<List<Category>> getUserCategories(Integer userId, Integer page);
 
-    boolean getUserFollow(Integer see, Integer beSee);
-
     SysUser getTestAdminUser();
+
+    List<SysNotice> getShowNotices();
+
+    TableData<List<DetailedSysUser>> searchUser(String keyword, Integer page);
 }

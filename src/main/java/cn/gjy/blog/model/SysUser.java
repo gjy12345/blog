@@ -23,7 +23,6 @@ public class SysUser {
     @Alias("user_type")
     private Integer userType;
     private String face;
-    private Integer level;
     private String sign;
     @Alias("create_time")
     private String createTime;
@@ -65,13 +64,6 @@ public class SysUser {
         this.sign = sign;
     }
 
-    public Integer getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
 
     public String getFace() {
         return face;
@@ -154,22 +146,5 @@ public class SysUser {
         public static final int SYS_USER=1;
         public static final int SYS_GUEST=2;
     }
-
-    @Override
-    public String toString() {
-        return "SysUser{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", nickname='" + nickname + '\'' +
-                ", lock=" + lock +
-                ", lastLoginTime='" + lastLoginTime + '\'' +
-                ", lastLoginIp='" + lastLoginIp + '\'' +
-                ", userType=" + userType +
-                ", face='" + face + '\'' +
-                ", level=" + level +
-                ", sign='" + sign + '\'' +
-                ", createTime='" + createTime + '\'' +
-                '}';
-    }
+    
 }

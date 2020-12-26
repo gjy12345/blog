@@ -1,11 +1,20 @@
 package cn.gjy.blog.framework.tool;
 
+import cn.gjy.blog.framework.config.FrameworkConfig;
+
+import java.lang.reflect.Field;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+
 /**
  * @author gujianyang
  * @date 2020/12/4
  */
 public class XssTool {
-    private static final char[] unsafe={'\'','"','&','>','<'};
+    private static final char[] unsafe={'\'','"','&','<','>'};
     private static final char[][] safe={"&#039;".toCharArray(),"&#34;".toCharArray(),"&#38;".toCharArray()
         ,"&#60;".toCharArray(),"&#62;".toCharArray()};
 
@@ -38,10 +47,47 @@ public class XssTool {
     }
 
     //转换回不安全编码
-    public static String decode(String str){
+    private static String decode(String str){
         for (int i = 0; i < safe.length; i++) {
             str=str.replace(new String(safe[i]),unsafe[i]+"");
         }
         return str;
+    }
+
+    private static final Map<Class<?>, Field[]> fieldMap=new ConcurrentHashMap<>();
+
+    public static void decodeObject(Object o,Class<?> c) throws Exception{
+        if(List.class.isAssignableFrom(c)){
+            List list= (List) o;
+            for (Object value : list) {
+                decodeObject(value);
+            }
+        }else if(Map.class.isAssignableFrom(c)){
+            Map map= (Map) o;
+            for (Object value : map.keySet()) {
+                decodeObject(map.get(value));
+            }
+        }else if(c.getName().startsWith(FrameworkConfig.basePackage)){
+            decodeObject(o);
+        }else
+            throw new RuntimeException("无法为"+c.getName()+"提供xss过过滤");
+    }
+
+    private static void decodeObject(Object o) throws Exception{
+        if(o==null)
+            return;
+        Class<?> c=o.getClass();
+        Field[] fields;
+        if((fields=fieldMap.get(c))==null){
+            fields=ClassTool.getClassAllFields(c);
+            fieldMap.put(c,fields);
+        }
+        //替换不安全的字符
+        for (Field field : fields) {
+            field.setAccessible(true);
+            if (field.get(o) instanceof String) {
+                field.set(o,XssTool.encode((String) field.get(o)));
+            }
+        }
     }
 }

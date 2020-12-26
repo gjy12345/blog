@@ -315,6 +315,7 @@ public class BlogManageController {
         model.setAttribute("allComment",commentDao.getUserAllCommentCount(user.getId()));
         model.setAttribute("recentComments",commentDao.selectUserRecentComments(user.getId()));
         model.setAttribute("createDays", TimeUtils.getDays(user.getCreateTime()));
+        model.setAttribute("notices",userService.getShowNotices());
         return "user/welcome";
     }
 

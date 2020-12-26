@@ -39,29 +39,18 @@ public class UserController {
     @InitObject
     private BlogService blogService;
 
-    @Route("/follow")
-    public String follow(@BindParam(value = ContentString.USER_SESSION_TAG
-            ,from = HttpSession.class) SysUser sysUser
-            ,Model model){
-        model.setAttribute(ContentString.CHILD_JSP,FrameworkConfig.getJspPath("user/follow"));
-        return ContentString.BASE_JSP;
-    }
-
-
-
-
     @Route("/info")
     public String userInfo(@BindParam(value = "userId",required = true) Integer userId,Model model,
                            @BindParam(value = ContentString.USER_SESSION_TAG,from = HttpSession.class)
                                    SysUser sysUser){
         model.setAttribute(ContentString.CHILD_JSP,FrameworkConfig.getJspPath("user/info"));
-        model.setAttribute("showUser",userService.getUserInfo(userId));
-        model.setAttribute("allVisit",blogDao.getUserAllVisitCount(userId));
-        model.setAttribute("allArticlesCount",userService.getUserBlogCount(userId));
-        if(sysUser!=null){
-            model.setAttribute("gz",userService.getUserFollow(sysUser.getId(),userId));
+        SysUser userInfo = userService.getUserInfo(userId);
+        if(userInfo==null){
+            model.setAttribute(ContentString.CHILD_JSP,FrameworkConfig.getJspPath("404"));
         }else {
-            model.setAttribute("gz",false);
+            model.setAttribute("showUser",userInfo);
+            model.setAttribute("allVisit",blogDao.getUserAllVisitCount(userId));
+            model.setAttribute("allArticlesCount",userService.getUserBlogCount(userId));
         }
         return ContentString.BASE_JSP;
     }

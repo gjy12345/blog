@@ -20,4 +20,6 @@ public class ContentString {
     public static final String CLIENT_WEB = "web";
     public static final Integer UNLOCK = 0;
     public static final Integer MAN = 0;
+
+    public static final int TRUE_INT=1;
 }

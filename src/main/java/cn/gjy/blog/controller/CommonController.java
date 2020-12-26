@@ -3,6 +3,7 @@ package cn.gjy.blog.controller;
 import cn.gjy.blog.common.ContentString;
 import cn.gjy.blog.framework.annotation.*;
 import cn.gjy.blog.framework.config.FrameworkConfig;
+import cn.gjy.blog.framework.controller.HttpRequestUtil;
 import cn.gjy.blog.model.CheckResult;
 import cn.gjy.blog.model.SysUser;
 import cn.gjy.blog.utils.FileUtils;
@@ -51,7 +52,7 @@ public class CommonController {
     public Map<String,Object> uploadFile(HttpServletRequest request,
         @BindParam(value = ContentString.USER_SESSION_TAG,from = HttpSession.class) SysUser user) throws Exception {
         Map<String,Object> resultMap=new HashMap<>();
-        if(user==null){
+        if(user==null&& HttpRequestUtil.getAdminUserId()==null){
             resultMap.put("success",0);
             resultMap.put("message","请您先登录");
             return resultMap;

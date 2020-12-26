@@ -122,17 +122,15 @@ To change this template use File | Settings | File Templates.
 					<fieldset class="layui-elem-field" style="padding: 5px;">
 						<!--WeAdmin公告-->
 						<div class="layui-card">
-							<div class="layui-card-header layui-elem-quote" style="min-height: 50px">公告 <a href="#">更多</a></div>
+							<div class="layui-card-header layui-elem-quote" style="min-height: 50px">公告 </div>
 							<div class="layui-card-body">
 								<div class="layui-carousel weadmin-notice" lay-filter="notice" lay-indicator="inside" lay-arrow="none" style="width: 100%; height: 280px;">
 									<div carousel-item="">
-										<div class="">
-											<a href="https://gitee.com/lovetime/WeAdmin" target="_blank" class="layui-bg-red">新的风暴已经出现</a>
-										</div>
-										<div class="">
-											<a href="http://www.layui.com/admin/" target="_blank" class="layui-bg-blue">怎么能够停滞不前</a>
-										</div>
-
+										<c:forEach items="${notices}" var="notice">
+											<div class="">
+												<a href="${pageContext.request.contextPath}/notice?id=${notice.id}" target="_blank" class="layui-bg-blue">${notice.title}</a>
+											</div>
+										</c:forEach>
 									</div>
 									<div class="layui-carousel-ind">
 										<ul>

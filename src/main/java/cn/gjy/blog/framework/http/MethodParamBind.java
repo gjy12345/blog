@@ -8,6 +8,7 @@ import cn.gjy.blog.framework.log.SimpleLog;
 import cn.gjy.blog.framework.model.Model;
 import cn.gjy.blog.framework.model.ModelAndView;
 import cn.gjy.blog.framework.tool.ClassTool;
+import cn.gjy.blog.framework.tool.XssTool;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -28,7 +29,7 @@ public class MethodParamBind {
 
     private static final SimpleLog log=SimpleLog.log(MethodParamBind.class);
 
-    public static Object[] assignmentMethod(Method method,HttpServletRequest request,HttpServletResponse response) throws Exception{
+    public static Object[] assignmentMethod(Method method,HttpServletRequest request,HttpServletResponse response,boolean filter) throws Exception{
         Class<?>[] parameterTypes = method.getParameterTypes();
         Object[] objects=new Object[parameterTypes.length];
         BindParam bindParam;
@@ -57,7 +58,7 @@ public class MethodParamBind {
                 }
             }else if(parameters[i].getAnnotation(JsonRequestBody.class)!=null
             ||parameters[i].getAnnotation(RequestBody.class)!=null){
-                objects[i]=jsonSerializeBean(request,parameters[i].getType());
+                objects[i]=jsonSerializeBean(request,parameters[i].getType(),filter);
             }
         }
         assignmentDefault(objects,parameterTypes,request,response);
@@ -66,8 +67,8 @@ public class MethodParamBind {
 
     private static final Gson gson=new Gson();
 
-    private static Object jsonSerializeBean(HttpServletRequest request,Class<?> tClass) throws IOException {
-        if(request.getContentType().toLowerCase().contains("application/json")){
+    private static Object jsonSerializeBean(HttpServletRequest request,Class<?> tClass,boolean xssFilter) throws Exception {
+        if(request.getContentType()!=null&&request.getContentType().toLowerCase().contains("application/json")){
             request.setCharacterEncoding("utf-8");
             BufferedReader streamReader = new BufferedReader( new InputStreamReader(request.getInputStream(), "UTF-8"));
             StringBuilder json = new StringBuilder();
@@ -76,7 +77,11 @@ public class MethodParamBind {
                 json.append(data);
             log.v(json.toString());
             TypeToken<?> genericTypeToken = TypeToken.get(tClass);
-            return gson.fromJson(json.toString(),genericTypeToken.getType());
+            Object o=gson.fromJson(json.toString(),genericTypeToken.getType());
+            if(xssFilter){
+                XssTool.decodeObject(o,tClass);
+            }
+            return o;
         }else
             throw new RuntimeException("content-type错误，必须含有:application/json");
     }

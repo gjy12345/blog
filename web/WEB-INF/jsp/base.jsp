@@ -49,23 +49,22 @@ To change this template use File | Settings | File Templates.
 
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav navbar-right">
-                            <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/">探索</a></li>
-                            <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/user/follow">关注</a></li>
+                            <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/">推荐</a></li>
+                            <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/new">最新</a></li>
                             <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/article/ranking">排行</a></li>
+                            <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/user/manage/">我的</a></li>
                             <c:if test="${ADMIN_SESSION_TAG!=null}">
                                 <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/admin/">管理</a></li>
                             </c:if>
-                            <c:if test="${ADMIN_SESSION_TAG==null}">
-                                <li class="cl-effect-11"><a href="${pageContext.request.contextPath}/user/manage/">我的</a></li>
-                            </c:if>
+
                         </ul>
                     </div><!-- /.navbar-collapse -->
                 </nav>
                 <div id="header-search-box">
                     <a id="search-menu" href="#"><span id="search-icon" class="ion-ios-search-strong"></span></a>
                     <div id="search-form" class="search-form">
-                        <form role="search" method="get" id="searchform" action="#">
-                            <input type="search" placeholder="搜索" required>
+                        <form role="search" method="get" id="searchform" action="${pageContext.request.contextPath}/search">
+                            <input type="search" name="keyword" placeholder="搜索" required>
                             <button type="submit"><span class="ion-ios-search-strong"></span></button>
                         </form>
                     </div>
@@ -91,15 +90,12 @@ To change this template use File | Settings | File Templates.
     <button type="button" class="overlay-close"><span class="ion-ios-close-empty"></span></button>
     <nav>
         <ul>
-            <li><a href="#">探索</a></li>
-            <li><a href="${pageContext.request.contextPath}/user/follow">关注</a></li>
+            <li><a href="${pageContext.request.contextPath}/">推荐</a></li>
+            <li><a href="${pageContext.request.contextPath}/new">最新</a></li>
             <li><a href="${pageContext.request.contextPath}/article/ranking">排行</a></li>
             <li><a href="${pageContext.request.contextPath}/user/manage/">我的</a></li>
             <c:if test="${ADMIN_SESSION_TAG!=null}">
                 <li><a href="${pageContext.request.contextPath}/admin/">管理</a></li>
-            </c:if>
-            <c:if test="${ADMIN_SESSION_TAG==null}">
-                <li><a href="${pageContext.request.contextPath}/user/manage/">我的</a></li>
             </c:if>
         </ul>
     </nav>

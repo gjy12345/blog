@@ -89,7 +89,7 @@ public class BeanAssignment {
     @SuppressWarnings("unchecked")
     private static  <T> T assignmentBean(ResultSet resultSet,Class<T> tClass,BeanFieldsInfo info,ResultSetMetaData metaData) throws SQLException, IllegalAccessException, InstantiationException {
         if(Map.class.isAssignableFrom(tClass)){
-            return (T) valueToMap(resultSet,resultSet.getMetaData(),tClass);
+            return (T) valueToMap(resultSet,resultSet.getMetaData(), (Class<? extends Map<String, Object>>) tClass);
         }else if(getBasicDataClassSet().contains(tClass)){
             //普通的数据结构
             if(metaData.getColumnCount()==1){
@@ -163,11 +163,13 @@ public class BeanAssignment {
         return t;
     }
 
-    private static Map<String,Object> valueToMap(ResultSet resultSet, ResultSetMetaData metaData,Class<?> returnClass) throws SQLException, IllegalAccessException, InstantiationException {
+    private static Map<String,Object> valueToMap(ResultSet resultSet, ResultSetMetaData metaData,Class<? extends Map<String,Object>> returnClass) throws SQLException, IllegalAccessException, InstantiationException {
+        Map<String,Object> map;
         if(returnClass.isInterface()){
-            returnClass=HashMap.class;
+            map=new HashMap<>();
+        }else {
+            map= returnClass.newInstance();
         }
-        Map<String,Object> map= (Map<String, Object>) returnClass.newInstance();
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
             map.put(metaData.getColumnLabel(i),resultSet.getObject(i));
         }

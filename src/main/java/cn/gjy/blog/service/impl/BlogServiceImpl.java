@@ -220,7 +220,8 @@ public class BlogServiceImpl implements BlogService {
         }
         if(article.getStatus()==Article.ArticleState.LOCK){
             //彻底删除
-
+            blogDao.removeBlog(id);
+            commentDao.deleteCommentByArticleId(article.getId());
             commonDao.insertLog(sysUser.getId(), SysOperation.OperationType.DELETE_BOLG,
                     "彻底删除博客:" + article.getTitle(),
                     TimeUtils.getSimpleDateFormat().format(System.currentTimeMillis()),
@@ -308,6 +309,7 @@ public class BlogServiceImpl implements BlogService {
             return CheckResult.createFailResult("没有此博客!");
         }
         if(blogDao.removeBlog(article.getId())!=0){
+            commentDao.deleteCommentByArticleId(article.getId());
             commonDao.insertLog(sysUser.getId(), SysOperation.OperationType.CREATE_NEW_BOLG,
                     "删除回收站博客:" + article.getTitle(),
                     TimeUtils.getSimpleDateFormat().format(System.currentTimeMillis()),
@@ -347,6 +349,11 @@ public class BlogServiceImpl implements BlogService {
                 setBlogDetailInfo(model,detailedArticle);
                 return "blog/blog_detail";
             }
+            if(HttpRequestUtil.isAdmin()){
+                //可以看
+                setBlogDetailInfo(model,detailedArticle);
+                return "blog/blog_detail";
+            }
             if(detailedArticle.getPublicityLevel().equals(Article.PubLevel.PASSWORD)){
                 //需要密码
                 if(detailedArticle.getPassword().equals(password)){
@@ -363,12 +370,7 @@ public class BlogServiceImpl implements BlogService {
             }
             else if(detailedArticle.getPublicityLevel().equals(Article.PubLevel.PRIVATE)){
                 //私密
-                if(detailedArticle.getUserId().equals(HttpRequestUtil.getUserId())||
-                HttpRequestUtil.isAdmin()){
-                    //可以看
-                    setBlogDetailInfo(model,detailedArticle);
-                    return "blog/blog_detail";
-                }
+                return "blog/blog_not_found";
             }else if(detailedArticle.getPublicityLevel().equals(Article.PubLevel.PUBLIC)){
                 setBlogDetailInfo(model,detailedArticle);
                 return "blog/blog_detail";

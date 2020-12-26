@@ -37,4 +37,18 @@ public interface AdminService {
     TableData<List<Comment>> getCommentListData(Integer page, String keyword);
 
     CheckResult<Void> deleteCommentById(Integer id);
+
+    TableData<List<SysNotice>> getNoticeList(Integer page, String keyword);
+
+    CheckResult<Void> addNewNotice(SysNotice notice);
+
+    CheckResult<Void> editNotice(SysNotice notice);
+
+    SysNotice getNoticeById(Integer id);
+
+    CheckResult<Void> deleteNotice(Integer id);
+
+    CheckResult<Void> changeNoticeShowStatus(Integer id, Integer show);
+
+    CheckResult<Void> editAdminInfo(SysUser uploadUser);
 }

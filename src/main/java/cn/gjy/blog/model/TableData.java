@@ -25,4 +25,11 @@ public class TableData <T>{
     public void setData(T data) {
         this.data = data;
     }
+
+    public static <T> TableData<T> emptyData(T t){
+        TableData<T> tableData = new TableData<>();
+        tableData.setData(t);
+        tableData.setTotal(0);
+        return tableData;
+    }
 }

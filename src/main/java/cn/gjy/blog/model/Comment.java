@@ -21,7 +21,6 @@ public class Comment {
     private Long createTimeL;
     @Alias("user_type")
     private Integer userType;
-    private Integer status;
     private String articlePassword;
     private String userName;
     private boolean canDelete;
@@ -124,13 +123,6 @@ public class Comment {
         this.userType = userType;
     }
 
-    public Integer getStatus() {
-        return status;
-    }
-
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
 
     public static class CommentUserType{
         public static final int ADMIN=1;

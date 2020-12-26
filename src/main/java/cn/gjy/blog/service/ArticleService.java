@@ -3,6 +3,7 @@ package cn.gjy.blog.service;
 
 import cn.gjy.blog.model.Article;
 import cn.gjy.blog.model.DetailedArticle;
+import cn.gjy.blog.model.TableData;
 
 import java.util.List;
 
@@ -16,4 +17,8 @@ public interface ArticleService {
 
 
     List<DetailedArticle> selectRecentBlogs();
+
+    List<DetailedArticle> selectBestBlogs();
+
+    TableData<List<DetailedArticle>> searchArticle(String keyword,Integer page);
 }

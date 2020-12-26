@@ -4,6 +4,11 @@ import cn.gjy.blog.framework.annotation.Component;
 import com.sun.management.OperatingSystemMXBean;
 
 import java.lang.management.ManagementFactory;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @Author gujianyang
@@ -27,24 +32,12 @@ public class SystemInfoRunnable implements Runnable{
     private static SystemInfoRunnable instance=null;
 
 
-    public MemoryInfo getMemoryInfo() {
-        return memoryInfo;
-    }
-
-    public CpuInfo getCpuInfo() {
-        return cpuInfo;
-    }
-
-    public JvmInfo getJvmInfo() {
-        return jvmInfo;
-    }
-
     public SystemInfoRunnable(){
         if(instance!=null)
             throw new RuntimeException("已存在SystemInfoRunnable实例");
         instance=this;
         thread=new Thread(this);
-//        thread.start();
+        thread.start();
     }
 
     @Override
@@ -53,15 +46,27 @@ public class SystemInfoRunnable implements Runnable{
         this.jvmInfo=new JvmInfo();
         this.cpuInfo=new CpuInfo();
         OperatingSystemMXBean operatingSystemMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+        initSystemInfo();
         while (!Thread.currentThread().isInterrupted()){
             setMemoryInfo(operatingSystemMXBean);
             setJvmInfo();
+            updateSystemInfo();
             try {
                 Thread.sleep(WAIT_TIME);
             } catch (InterruptedException e) {
                 return;
             }
         }
+    }
+
+    private void updateSystemInfo() {
+        systemInfoMap.put("程序已用内存",jvmInfo.used);
+        systemInfoMap.put("程序闲置内存",jvmInfo.free);
+        systemInfoMap.put("程序最大可用",jvmInfo.total);
+        systemInfoMap.put("系统内存",memoryInfo.total);
+        systemInfoMap.put("系统可用",memoryInfo.free);
+        systemInfoMap.put("系统已用",memoryInfo.used);
+
     }
 
     private void setJvmInfo() {
@@ -78,9 +83,26 @@ public class SystemInfoRunnable implements Runnable{
         long physicalTotal = operatingSystemMXBean.getTotalPhysicalMemorySize() ;
         long physicalUse = physicalTotal - physicalFree;
         memoryInfo.setTotal(convertFileSize(physicalTotal));
-        memoryInfo.setUsed(convertFileSize(physicalFree));
-        memoryInfo.setFree(convertFileSize(physicalUse));
+        memoryInfo.setUsed(convertFileSize(physicalUse));
+        memoryInfo.setFree(convertFileSize(physicalFree));
     }
+
+//    private List<S>
+    private Map<String,Object> systemInfoMap=new LinkedHashMap<>();
+
+    public Map<String,Object> getSystemInfos(){
+        return systemInfoMap;
+    }
+
+    public void initSystemInfo(){
+        systemInfoMap.clear();
+        Properties properties = System.getProperties();
+        systemInfoMap.put("系统名",properties.getProperty("os.name"));
+        systemInfoMap.put("架构",properties.getProperty("os.arch"));
+        systemInfoMap.put("Java版本",properties.getProperty("java.version"));
+        systemInfoMap.put("Jvm版本",properties.getProperty("java.vm.name"));
+    }
+
 //
     /**
      * 字节转换

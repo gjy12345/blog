@@ -5,9 +5,7 @@ import cn.gjy.blog.dao.method.admin.AdminCommentMethodSql;
 import cn.gjy.blog.dao.method.admin.AdminUserMethodSql;
 import cn.gjy.blog.framework.Invocation.DaoInvocationHandlerImpl;
 import cn.gjy.blog.framework.annotation.*;
-import cn.gjy.blog.model.Article;
-import cn.gjy.blog.model.DetailedSysUser;
-import cn.gjy.blog.model.SysUser;
+import cn.gjy.blog.model.*;
 
 import java.util.List;
 
@@ -36,4 +34,41 @@ public interface AdminDao {
 
     @Update("update article set article.status=#{status} where id=#{id}")
     int lockOrUnlockBlog(@BindParam("id") Integer id,@BindParam("status") Integer changeStatus);
+
+    @Select("select count(*) from sys_notice;")
+    int getNoticeCount();
+
+    @Select("select count(*) from sys_notice where title like concat('%',#{keyword},'%')")
+    int getNoticeCountByKeyword(@BindParam("keyword") String keyword);
+
+    @Select("select * from sys_notice where title like concat('%',#{keyword},'%')  order by id desc limit #{page},#{size}")
+    List<SysNotice> selectNoticeListByKeyword( @BindParam("keyword") String keyword,@BindParam("page") Integer page,@BindParam("size")Integer size);
+
+    @Select("select * from sys_notice order by id desc limit #{page},#{size}")
+    List<SysNotice> selectNoticeList(@BindParam("page") Integer page,@BindParam("size")Integer size);
+
+    @Insert("insert into sys_notice(title,content,create_time,create_time_l) " +
+            "values(#{title},#{content},#{create_time},#{create_time_l});")
+    int insertNotice(SysNotice notice);
+
+    @Select("select * from sys_notice where title = #{title}")
+    SysNotice selectNoticeByName(@BindParam("title") String title);
+
+    @Select("select * from sys_notice where id = #{id}")
+    SysNotice selectNoticeById(@BindParam("id") Integer id);
+
+    @Update("update sys_notice set content=#{content}," +
+            "update_time=#{update_time}," +
+            "title=#{title} where id=#{id}")
+    int updateNotice(SysNotice notice);
+
+    @Delete("delete from sys_notice where id=#{id}")
+    int deleteNoticeById(@BindParam("id") Integer id);
+
+    @Update("update sys_notice set sys_notice.show=#{show} where id=#{id}")
+    int updateNoticeShow(@BindParam("id") Integer id,@BindParam("show") Integer show);
+
+    @Update("update sys_user set nickname=#{nickname}," +
+            "sign=#{sign},password=#{password},face=#{face},sex=#{sex} where id=#{id}")
+    int updateAdminInfo(SysUser uploadUser);
 }

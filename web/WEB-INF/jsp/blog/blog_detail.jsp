@@ -82,7 +82,7 @@
                     </ul>
                     <c:if test="${recent_blog.size()>0}">
                         <div style="text-align: center;">
-                            <a href="">查看更多</a>
+                            <a href="${pageContext.request.contextPath}/user/info?userId=${blog.userId}">查看更多</a>
                         </div>
                     </c:if>
                 </div>
@@ -92,13 +92,13 @@
                     <ul>
                         <c:forEach items="${author_categories}" var="category">
                             <li>
-                                <a href="#">${category.name}<span class="post-count">(${category.blogUseCount})</span></a>
+                                <a href="javascript:void(0)">${category.name}<span class="post-count">(${category.blogUseCount})</span></a>
                             </li>
                         </c:forEach>
                     </ul>
                     <c:if test="${author_categories.size()>0}">
                         <div style="text-align: center;">
-                            <a href="">查看更多</a>
+                            <a href="${pageContext.request.contextPath}/user/info?userId=${blog.userId}">查看更多</a>
                         </div>
                     </c:if>
                 </div>

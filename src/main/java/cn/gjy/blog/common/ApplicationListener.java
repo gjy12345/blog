@@ -4,6 +4,7 @@ import cn.gjy.blog.framework.annotation.Component;
 import cn.gjy.blog.framework.annotation.InitObject;
 import cn.gjy.blog.framework.listener.ApplicationLifeCycleListener;
 import cn.gjy.blog.framework.log.SimpleLog;
+import cn.gjy.blog.system.SystemInfoRunnable;
 
 /**
  * @Author gujianyang
@@ -15,6 +16,9 @@ public class ApplicationListener implements ApplicationLifeCycleListener {
 
     private SimpleLog log=SimpleLog.log(ApplicationListener.class);
 
+    @InitObject
+    private SystemInfoRunnable systemInfoRunnable;
+
 
     @Override
     public void onStart() {
@@ -23,6 +27,6 @@ public class ApplicationListener implements ApplicationLifeCycleListener {
 
     @Override
     public void onDestroy() {
-
+        systemInfoRunnable.stopWork();
     }
 }

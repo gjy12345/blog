@@ -171,4 +171,8 @@ public interface BlogDao {
 
     @Delete("delete from category where create_user=#{id}")
     int deleteCategoryByUserId(@BindParam("id") Integer id);
+
+
+    @Select("select title from article where user_id=#{id} order by id desc limit 1")
+    String selectUserLatestBlog(@BindParam("id") Integer id);
 }

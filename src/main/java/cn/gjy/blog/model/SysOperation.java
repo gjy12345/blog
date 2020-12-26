@@ -91,5 +91,8 @@ public class SysOperation {
         public static final int EDIT_NEW_USER = 12;
         public static final int LOCK_BLOG = 13;
         public static final int UNLOCK_BLOG = 14;
+        public static final int ADD_NEW_NOTICE = 15;
+        public static final int EDIT_NOTICE = 16;
+        public static final int DELETE_NOTICE = 17;
     }
 }

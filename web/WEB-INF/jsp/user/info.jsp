@@ -11,6 +11,7 @@
 <script src="${pageContext.request.contextPath}/static/editormd/js/editormd.min.js"></script>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/static/editormd/css/editormd.preview.css"/>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/layui-page.css"/>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/custom_new.css">
 <style type="text/css">
     .gz {
         font-family: "SF Pro Display", Roboto, Noto, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
@@ -63,18 +64,13 @@
                             <div style="display: inline">
                                 <h1 class="entry-title nickname" style="text-align: left;display: inline;">
                                     ${showUser.nickname}</h1>
-                                <c:if test="${gz==false}">
-                                    <span class="gz">关注</span>
-                                </c:if>
-                                <c:if test="${gz==true}">
-                                    <span class="gz">已关注</span>
-                                </c:if>
+                                <img src="${pageContext.request.contextPath}/static/img/${showUser.sex==0?'nan.png':'nv.png'}" height="17px" alt="">
                             </div>
                         </div>
-                        <div class="entry-meta" style="text-align: left;margin-top: 20px">
-                            <span class="post-author"><a href="#">加入时间:&nbsp;${showUser.createTime}&nbsp;</a></span>
-                            <span class="views-count"><a href="#">博客数:&nbsp;${allArticlesCount} </a></span>
-                            <span class="views-count"><a href="#">阅读量:&nbsp;${allVisit} </a></span>
+                        <div class="entry-meta" style="text-align: left;margin-top: 20px;color: grey">
+                            <span class="post-author post-meta-item-text" ><a href="#" style="color: grey" >加入时间:&nbsp;${showUser.createTime}&nbsp;</a></span>
+                            <span class="views-count post-meta-item-text"><a href="#" style="color: grey" >博客数:&nbsp;${allArticlesCount} </a></span>
+                            <span class="views-count post-meta-item-text"><a href="#" style="color: grey" >阅读量:&nbsp;${allVisit} </a></span>
                         </div>
                         <div style="width: 100%;display: block" id="articles">
 
@@ -229,29 +225,82 @@
             });
         }
 
-        function setUserArticles(data) {
-            let html = ''
+        function setUserArticles(data){
+            let html=''
             for(let i=0;i<data.length;i++){
-                html=html+'<header class="entry-header">' +
-                    '<p class="entry-title">' +
-                    '<a href="${pageContext.request.contextPath}/article/detail?url='+data[i].url+'" target="_blank">'+data[i].title+'</a></p>' +
-                    '<div class="entry-content clearfix">' +
-                    '<p>'+data[i].description+'</p>' +
+                let h='<div class=" post-box">' +
+                    '<div class="post-header">' +
+                    '<div class="post-title">' +
+                    '<a href="${pageContext.request.contextPath}/article/detail?url='+data[i].url+'">'+data[i].title+'</a>' +
                     '</div>' +
-                    (data[i].thumb==null?'':'<div class="entry-content clearfix">' +
-                        '<p><img src="'+data[i].thumb+'" alt="" style="max-height: 300px" width="auto"></p>' +
-                        '</div>')+
-                    '<div class="entry-meta">' +
-                    '<span class="post-date"><a href="javascript:void(0)"><time class="entry-date" datetime="'+data[i].createTime+'">'+data[i].createTime+'</time></a></span>' +
-                    '<span class="post-category"><a href="javascript:void(0)">分类: '+data[i].typeName+'</a></span>' +
-                    '<span class="comments-link"><a href="javascript:void(0)"> 浏览 '+data[i].visit+'</a></span>' +
-                    '<span class="comments-link"><a href="javascript:void(0)"> 评论 '+data[i].common+'</a></span>' +
-                    '<span class="comments-link"><a href="javascript:void(0)"> 权限 '+data[i].pubLevelName+'</a></span>' +
+                    '<div class="post-meta">' +
+                    '<span class="post-meta-item-text">发表于</span>' +
+                    '<time title="创建于" datetime="'+data[i].createTime+'">' +
+                    data[i].createTime +
+                    '</time>' +
+                    '<span class="post-meta-item-text"> 分类于</span>' +
+                    '<a href="javscript:void(0)">' +
+                    '<span itemprop="name"> '+data[i].typeName+' </span>' +
+                    '</a>' +
+                    '<span class="post-meta-item-text">浏览</span>' +
+                    '<a href="javscript:void(0)">' +
+                    '<span itemprop="name"> '+data[i].visit+'</span>' +
+                    '</a>' +
+                    '<span class="post-meta-item-text">评论</span>' +
+                    '<a href="javscript:void(0)">' +
+                    '<span itemprop="name"> '+data[i].common+' </span>' +
+                    '</a>' +
+                    '<span class="post-meta-item-text">公开级别</span>' +
+                    '<a href="javscript:void(0)">' +
+                    '<span itemprop="name"> '+data[i].pubLevelName+' </span>' +
+                    '</a>' +
                     '</div>' +
-                    '</header>';
+                    '</div>' +
+                    '<div class="post-body">';
+                if(data[i].description!==undefined&&data[i].description!==null){
+                    h=h+data[i].description;
+                }
+                if(data[i].thumb!==undefined&&data[i].thumb!==null){
+                    h=h+'<div class="entry-content clearfix">' +
+                        '<p><img src="'+data[i].thumb+'" alt="" height="300px" width="auto"></p>' +
+                        '</div>';
+                }
+                h=h+
+                    '<div class="">' +
+                    '<a class="read_btn" href="${pageContext.request.contextPath}/article/detail?url='+data[i].url+'">' +
+                    '阅读全文 »' +
+                    '</a>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
+                html=html+h;
             }
-            $("#articles").html(html)
+            $("#articles").append(html)
         }
+
+        <%--function setUserArticles(data) {--%>
+        <%--    let html = ''--%>
+        <%--    for(let i=0;i<data.length;i++){--%>
+        <%--        html=html+'<header class="entry-header">' +--%>
+        <%--            '<p class="entry-title">' +--%>
+        <%--            '<a href="${pageContext.request.contextPath}/article/detail?url='+data[i].url+'" target="_blank">'+data[i].title+'</a></p>' +--%>
+        <%--            '<div class="entry-content clearfix">' +--%>
+        <%--            '<p>'+data[i].description+'</p>' +--%>
+        <%--            '</div>' +--%>
+        <%--            (data[i].thumb==null?'':'<div class="entry-content clearfix">' +--%>
+        <%--                '<p><img src="'+data[i].thumb+'" alt="" style="max-height: 300px" width="auto"></p>' +--%>
+        <%--                '</div>')+--%>
+        <%--            '<div class="entry-meta">' +--%>
+        <%--            '<span class="post-date"><a href="javascript:void(0)"><time class="entry-date" datetime="'+data[i].createTime+'">'+data[i].createTime+'</time></a></span>' +--%>
+        <%--            '<span class="post-category"><a href="javascript:void(0)">分类: '+data[i].typeName+'</a></span>' +--%>
+        <%--            '<span class="comments-link"><a href="javascript:void(0)"> 浏览 '+data[i].visit+'</a></span>' +--%>
+        <%--            '<span class="comments-link"><a href="javascript:void(0)"> 评论 '+data[i].common+'</a></span>' +--%>
+        <%--            '<span class="comments-link"><a href="javascript:void(0)"> 权限 '+data[i].pubLevelName+'</a></span>' +--%>
+        <%--            '</div>' +--%>
+        <%--            '</header>';--%>
+        <%--    }--%>
+        <%--    $("#articles").html(html)--%>
+        <%--}--%>
 
         loadCategories(1)
     </script>

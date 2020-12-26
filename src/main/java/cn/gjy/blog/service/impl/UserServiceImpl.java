@@ -15,8 +15,6 @@ import cn.gjy.blog.utils.Md5Utils;
 import cn.gjy.blog.utils.StringUtils;
 import cn.gjy.blog.utils.TimeUtils;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -133,7 +131,11 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public SysUser getUserInfo(Integer userId) {
-        return userDao.selectUserById(userId,SysUser.USER);
+        SysUser user = userDao.selectUserById(userId, SysUser.USER);
+        if(user==null){
+            user=userDao.selectUserById(userId,SysUser.ADMIN);
+        }
+        return user;
     }
 
     @Override
@@ -149,14 +151,25 @@ public class UserServiceImpl implements UserService{
         return tableData;
     }
 
-    @Override
-    public boolean getUserFollow(Integer see, Integer beSee) {
-        return userDao.checkFollow(see,beSee)==1;
-    }
 
     @Override
     public SysUser getTestAdminUser() {
         return userDao.selectUserByUsername("admin",SysUser.ADMIN);
     }
 
+    @Override
+    public List<SysNotice> getShowNotices() {
+        return userDao.selectShowNotices();
+    }
+
+    @Override
+    public TableData<List<DetailedSysUser>> searchUser(String keyword, Integer page) {
+        TableData<List<DetailedSysUser>> tableData=new TableData<>();
+        tableData.setTotal(userDao.getUserCountByNickname(keyword));
+        tableData.setData(userDao.selectUserListByNickname(keyword,(page==null?0:--page)*10,10));
+        tableData.getData().forEach(detailedSysUser -> {
+            detailedSysUser.setLastRelease(blogDao.selectUserLatestBlog(detailedSysUser.getId()));
+        });
+        return tableData;
+    }
 }

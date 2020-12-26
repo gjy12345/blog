@@ -53,4 +53,7 @@ public interface CommentDao {
 
     @Delete("delete from comment where user_id=#{id}")
     int deleteCommentByUserId(@BindParam("id") Integer id);
+
+    @Delete("delete from `comment` where article_id=#{id}")
+    int deleteCommentByArticleId(@BindParam("id") Integer id);
 }

@@ -40,10 +40,6 @@ public class CategoryMethodSql {
         @Override
         public SqlAndArgs handle(Object... data) {
             Category category= (Category) data[0];
-            if(category!=null&&data[1]==null&&data[2]==null){
-                return SqlAndArgs.build("select * from category where create_user=? order by id desc",
-                        category.getCreateUser());
-            }
             Integer page= (Integer) data[1];
             Integer size= (Integer) data[2];
             StringBuilder sql=new StringBuilder("select * from category where ");
@@ -59,6 +55,7 @@ public class CategoryMethodSql {
                 sql.append("and category.lock=? ");
                 args[index++]=category.getLock();
             }
+            if(size!=null&&page!=null)
             sql.append(" order by id desc limit ").append(page*10).append(", ").append(size);
             return SqlAndArgs.build(sql.toString(), Arrays.copyOf(args,index));
         }

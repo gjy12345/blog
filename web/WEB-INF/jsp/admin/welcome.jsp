@@ -123,9 +123,16 @@ To change this template use File | Settings | File Templates.
 						<!--<legend>信息统计</legend>-->
 						<blockquote class="layui-elem-quote font16">系统信息</blockquote>
 						<div class="col-md-12">
-							<div class="col-md-12">
-
-							</div>
+							<c:forEach items="${systemInfos}" var="systemInfo">
+								<div class="entry-content clearfix table-bordered" style="padding-bottom: 10px;padding-top: 10px;">
+									<div class="entry-title col-md-6 font16" >
+											${systemInfo.key}:
+									</div>
+									<div class="col-md-6">
+											${systemInfo.value}
+									</div>
+								</div>
+							</c:forEach>
 						</div>
 					</fieldset>
 

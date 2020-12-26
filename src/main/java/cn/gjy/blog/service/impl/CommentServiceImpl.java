@@ -85,7 +85,7 @@ public class CommentServiceImpl implements CommentService {
             comment.setUserType(Comment.CommentUserType.ADMIN);
             comment.setUserId(admin.getId());
         }
-        comment.setContent(XssTool.decode(comment.getContent().trim()));
+        comment.setContent(XssTool.encode(comment.getContent().trim()));
         comment.setCreateTimeL(System.currentTimeMillis());
         comment.setCommonTime(TimeUtils.getSimpleDateFormat().format(comment.getCreateTimeL()));
         return commentDao.addNewComment(comment)==1?CheckResult.createSuccessResult(null,"评论成功!"):

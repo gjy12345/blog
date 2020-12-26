@@ -7,9 +7,6 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/static/editormd/css/editormd.min.css"/>
-<script src="${pageContext.request.contextPath}/static/editormd/js/editormd.min.js"></script>
-<link rel="stylesheet" href="${pageContext.request.contextPath}/static/editormd/css/editormd.preview.css" />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/bootstrap-card.css" />
 <style type="text/css">
     .widget-category1 ul {
@@ -32,6 +29,8 @@
         color: #000;
     }
 </style>
+
+<link rel="stylesheet" href="${pageContext.request.contextPath}/static/css/custom_new.css">
 <div class="content-body">
     <div class="container">
         <h3 style="text-align: center">
@@ -43,7 +42,7 @@
                     <div class="card " style="background: #5d6169;border-top-left-radius: 10px;border-top-right-radius: 10px;color: white">
                         <div class="card-body">阅读量排行榜</div>
                     </div>
-                    <div style="padding-left: 20px;padding-right: 20px;text-align: left" class="widget widget-category1">
+                    <div style="padding-left: 20px;padding-right: 20px;text-align: left;min-height: 400px" class="widget widget-category1">
                         <ul>
                             <c:forEach items="${visitRanking}" var="blog" varStatus="state">
                                 <li>
@@ -61,7 +60,7 @@
                     <div class="card " style="background: #5d6169;border-top-left-radius: 10px;border-top-right-radius: 10px;color: white">
                         <div class="card-body">创作排行榜</div>
                     </div>
-                    <div style="padding-left: 20px;padding-right: 20px;text-align: left" class="widget widget-category1">
+                    <div style="padding-left: 20px;padding-right: 20px;text-align: left;min-height: 400px" class="widget widget-category1">
                         <ul>
                             <c:forEach items="${czRanking}" var="user" varStatus="state">
                                 <li>
@@ -79,7 +78,7 @@
                     <div class="card " style="background: #5d6169;border-top-left-radius: 10px;border-top-right-radius: 10px;color: white">
                         <div class="card-body">评论排行榜</div>
                     </div>
-                    <div style="padding-left: 20px;padding-right: 20px;text-align: left" class="widget widget-category1">
+                    <div style="padding-left: 20px;padding-right: 20px;text-align: left;min-height: 400px" class="widget widget-category1">
                         <ul>
                             <c:forEach items="${commentRanking}" var="blog" varStatus="state">
                                 <li>
@@ -89,16 +88,6 @@
                                 </li>
                             </c:forEach>
                         </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4" style="margin-bottom: 20px">
-                <div class="items text-center" style="border: lightslategray solid 1px;border-radius: 10px;padding-bottom: 40px;">
-                    <div class="card " style="background: #5d6169;border-top-left-radius: 10px;border-top-right-radius: 10px;color: white">
-                        <div class="card-body">粉丝排行榜</div>
-                    </div>
-                    <div style="padding-left: 20px;padding-right: 20px">
-
                     </div>
                 </div>
             </div>
