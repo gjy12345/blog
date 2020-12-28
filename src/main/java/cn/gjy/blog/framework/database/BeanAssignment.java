@@ -91,7 +91,7 @@ public class BeanAssignment {
         if(Map.class.isAssignableFrom(tClass)){
             return (T) valueToMap(resultSet,resultSet.getMetaData(), (Class<? extends Map<String, Object>>) tClass);
         }else if(getBasicDataClassSet().contains(tClass)){
-            //普通的数据结构
+            //普通的数据类型
             if(metaData.getColumnCount()==1){
                 Object object = resultSet.getObject(1);
                 if (object!=null) {
