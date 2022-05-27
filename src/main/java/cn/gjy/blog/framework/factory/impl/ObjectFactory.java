@@ -46,9 +46,9 @@ public class ObjectFactory {
         objectMap=new ConcurrentHashMap<Class<?>, Object>(){
             @Override
             public Object put(Class<?> key, Object value) {
-                if(this.containsKey(key)){
-                    throw new RuntimeException("已经有一个相同的接口实现对象被放入");
-                }
+//                if(this.containsKey(key)){
+//                    throw new RuntimeException("已经有一个相同的接口实现对象被放入");
+//                }
                 return super.put(key, value);
             }
         };
